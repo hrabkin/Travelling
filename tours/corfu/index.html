@@ -70,6 +70,16 @@
     background:linear-gradient(90deg,var(--brass),var(--tile));
     transition:width .5s cubic-bezier(.2,.8,.2,1)}
   .count{font-family:var(--font-mono);font-size:12px;color:#EBDFC8;min-width:64px;text-align:right}
+  .passnote{
+    margin-top:11px;padding-top:10px;border-top:1px solid rgba(255,255,255,.14);
+    font-size:12px;line-height:1.5;color:#D9E6EB;
+  }
+  .passnote b{color:#F4ECDA;font-weight:600}
+  .passnote .tag{
+    font-family:var(--font-mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+    background:var(--brass);color:#20180a;padding:2px 7px;border-radius:4px;margin-right:8px;
+    display:inline-block;
+  }
 
   /* ---------- Layout ---------- */
   .layout{max-width:1180px;margin:0 auto}
@@ -117,6 +127,28 @@
     color:var(--muted);margin:2px 0 18px;max-width:46ch;
   }
   .lead b{color:var(--ink);font-weight:560}
+
+  /* tickets panel */
+  .tickets{
+    background:linear-gradient(180deg,#FBF6EA,#F5EDDC);
+    border:1px solid var(--brass);border-left:4px solid var(--brass);
+    border-radius:13px;padding:15px 16px;margin:0 0 22px;
+  }
+  .tickets h2{font-family:var(--font-display);font-weight:560;font-size:17px;margin:0 0 8px;letter-spacing:.1px}
+  .tickets p{margin:0;font-size:13.5px;color:var(--ink);line-height:1.5}
+  .tickets p b{font-weight:600}
+  .tickets .tnote{margin-top:11px;font-size:12px;color:var(--muted)}
+  .buyrow{display:flex;flex-wrap:wrap;gap:8px;margin:13px 0 2px}
+  .buy{
+    display:flex;flex-direction:column;gap:1px;text-decoration:none;
+    border:1px solid var(--line-strong);border-radius:9px;padding:8px 12px;background:#fff;
+    transition:border-color .15s,transform .1s,box-shadow .15s;
+  }
+  .buy:hover{border-color:var(--tile);box-shadow:0 3px 10px rgba(14,42,56,.1);transform:translateY(-1px)}
+  .buy strong{font-size:12.5px;color:var(--ink);font-weight:600}
+  .buy span{font-family:var(--font-mono);font-size:10px;color:var(--sea);letter-spacing:.01em}
+  .buy.primary{border-color:var(--brass);background:var(--brass-tint)}
+  .buy.primary strong{color:#5c4212}
 
   .stop{
     position:relative;display:grid;
@@ -183,6 +215,29 @@
   .chip.warn{background:var(--tile-tint);color:#7f2f1c}
   .chip.muted{background:rgba(14,42,56,.06);color:var(--muted)}
 
+  /* worth-knowing */
+  .facts{margin-top:11px;border-top:1px solid var(--line);padding-top:4px}
+  .facts summary{
+    cursor:pointer;list-style:none;padding:6px 0 2px;
+    font-family:var(--font-mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--brass);display:flex;align-items:center;gap:7px;-webkit-tap-highlight-color:transparent;
+  }
+  .facts summary::-webkit-details-marker{display:none}
+  .facts summary::before{content:"+";font-size:15px;line-height:1;color:var(--brass);transition:transform .2s}
+  .facts[open] summary::before{content:"–"}
+  .facts summary:hover{color:var(--tile)}
+  .facts ul{margin:8px 0 4px;padding:0 0 0 2px;list-style:none;display:flex;flex-direction:column;gap:9px}
+  .facts li{
+    position:relative;padding-left:16px;font-size:13.5px;line-height:1.5;color:var(--ink);
+  }
+  .facts li::before{
+    content:"";position:absolute;left:2px;top:8px;width:5px;height:5px;border-radius:50%;
+    background:var(--brass);
+  }
+  .facts li b{font-weight:600}
+  .facts li i{font-style:italic;color:var(--muted)}
+  .stop.done .facts li{color:var(--muted)}
+
   /* ---------- Footer ---------- */
   footer{
     max-width:1180px;margin:0 auto;padding:6px 16px 40px;
@@ -234,12 +289,26 @@
     <div class="bar"><i id="barFill"></i></div>
     <div class="count" id="count">0 / 8 done</div>
   </div>
+  <div class="passnote"><span class="tag">Pass</span>Combined museum ticket <b>€14</b> (reduced €7) · 5 sites · valid 3 days. But your two paid stops total just <b>€12</b>, so buy singles unless you add a third — details &amp; buy links below.</div>
 </header>
 
 <div class="layout">
   <section id="mapPane"><div id="map"></div></section>
   <section id="listPane">
     <p class="lead">A relaxed self-guided day <b>on foot</b> through the Venetian Old Town. Tap a stop to find it on the map; tap its <b>number</b> to check it off as you go.</p>
+
+    <section class="tickets">
+      <h2>Museum tickets &amp; the €14 pass</h2>
+      <p>The state <b>combined pass</b> is €14 (reduced €7), valid 3 days, covering the Old Fortress, Museum of Asian Art, Antivouniotissa (Byzantine), Archaeological Museum and Mon Repos. Your two paid stops are €6 each — <b>€12</b> — so singles are cheaper unless you add a third site (easiest: the Antivouniotissa, by lunch). The New Fortress is a separate ~€3 ticket, not on the pass.</p>
+      <div class="buyrow">
+        <a class="buy primary" href="https://etickets.tap.gr" target="_blank" rel="noopener noreferrer"><strong>Official e-tickets</strong><span>etickets.tap.gr</span></a>
+        <a class="buy" href="https://hhticket.gr" target="_blank" rel="noopener noreferrer"><strong>Official (mirror)</strong><span>hhticket.gr</span></a>
+        <a class="buy" href="https://www.getyourguide.com/old-venetian-fortress-l146616/" target="_blank" rel="noopener noreferrer"><strong>Old Fortress</strong><span>GetYourGuide</span></a>
+        <a class="buy" href="https://www.getyourguide.com/corfu-museum-of-asian-art-l146618/" target="_blank" rel="noopener noreferrer"><strong>Asian Art Museum</strong><span>GetYourGuide</span></a>
+      </div>
+      <p class="tnote">Cheapest is the on-site ticket office (no booking fee) — the pass is sold at any participating site. The official portal is no-markup but Corfu's sites aren't always listed there; GetYourGuide sells single entries with a small fee. St Spyridon is free.</p>
+    </section>
+
     <div id="list"></div>
   </section>
 </div>
@@ -248,6 +317,7 @@
   <div class="fnote">
     <p><span class="k">Getting in</span>You can walk both ways (~20–25 min each, flat and scenic) and skip buses entirely. If it's hot, take <b>Line 16</b> (port ⇄ Spilia) or Line 15 (port ⇄ San Rocco) for €1.20 a ride, bought at the port kiosk.</p>
     <p><span class="k">Route</span>Ship → Old Town on foot or Line 16 · everything inside the Old Town is walkable · back the same way.</p>
+    <p><span class="k">Tickets</span>Old Fortress and the Museum of Asian Art are <b>€6 each</b> (€12 for both). The €14 combined pass only pays off if you add a third state museum — easiest is the <b>Antivouniotissa</b> Byzantine museum by your lunch. For just these two, buy them separately.</p>
     <p><span class="k">Don't miss it</span>Leave the Liston by <b>15:55</b>. Return queues at the terminal build up when several ships are in.</p>
     <div class="actions">
       <button class="ghost" id="resetBtn">Reset checklist</button>
@@ -265,23 +335,66 @@ const STOPS = [
     note:"Off the ship. It's a flat, scenic 20-minute walk to the Old Town along the waterfront — or hop on <b>Line 16</b> to Spilia, right by the New Fortress.",
     chips:[["walk","walk","Walk ~20 min"],["bus","bus","or Line 16 → Spilia"]] },
   { id:"newfort", time:"10:30", name:"New Fortress", ll:[39.6266,19.9203],
-    note:"Start where you arrive: the Venetians' 16th-century fortress above Spilia. Quiet ramparts, vaulted tunnels, and wide views over town and harbour.",
-    chips:[["muted","info","Venetian, 16th c."],["muted","clock","~45 min"]] },
+    note:"Start where you arrive: the Venetians' fortress above Spilia. Quiet ramparts, vaulted tunnels, and wide views over town and harbour.",
+    chips:[["pay","ticket","~€3"],["muted","clock","~45 min"]],
+    facts:[
+      "Venice began it in the 1570s and cleared a whole slice of the medieval town to build it — including the original St Spyridon church, which is why the saint's relics ended up where they are now.",
+      "Look for the winged <b>Lion of St Mark</b> carved over the gateways — Venice's stamp of ownership, the same lion that guards Venice itself.",
+      "A honeycomb of vaulted tunnels and galleries runs underneath. It's usually near-empty — the quiet, cheap alternative to the Old Fortress.",
+      "Corfu was Venice's 'door to the Adriatic': this fort system is a big reason the island stayed unconquered while the rest of Greece fell to the Ottomans."
+    ] },
   { id:"oldfort", time:"11:30", name:"Old Fortress", ll:[39.6235,19.9275],
     note:"The great Venetian citadel on the sea side of town. Cross the moat and climb to the lighthouse for the full panorama.",
-    chips:[["pay","ticket","€10"],["muted","clock","Open 8–20"]] },
+    chips:[["pay","ticket","€6"],["muted","clock","Open 8–20"]],
+    facts:[
+      "The island's name is these two rocks: the twin <b>peaks</b> (koryphés) gave the Byzantine name <i>Koryphō</i>, 'city of the peaks', which Italian mouths turned into Corfù.",
+      "The Venetians cut the <b>Contrafossa</b>, a moat through solid rock joining sea to sea — turning the citadel into an artificial island reached by drawbridge. Locals still use its Italian name.",
+      "It never fell. It beat off every great Ottoman siege — 1537 (Barbarossa, 25,000 men), 1571 and the huge one of 1716 — while nearly every other Greek island became Ottoman.",
+      "Venice so feared betrayal that the commanders of the Old and New fortresses were sworn before the Senate <b>never to speak to each other</b> during their terms — so neither could talk the other into surrendering.",
+      "In 1718 lightning hit the powder magazine and blew up the interior, killing commander Andrea Pisani — who had survived the Ottoman siege two years earlier, only to die by his own gunpowder.",
+      "The 1716 victory was a European sensation: <b>Vivaldi</b> wrote an oratorio for it. And that Doric 'ancient temple' inside is a fake — the British built the Church of St George in the 1840s."
+    ] },
   { id:"lunch", time:"13:00", name:"Lunch in the Campiello", ll:[39.6246,19.9232],
     note:"Wander into the shaded lanes of the old quarter for a taverna — the coolest way through the hottest part of the day.",
-    chips:[["muted","clock","~75 min"]] },
+    chips:[["muted","clock","~75 min"]],
+    facts:[
+      "The Campiello is the medieval core — a maze of <b>kantoúnia</b> (alleys) with laundry strung between tall, shuttered houses.",
+      "Walled tight against sieges, Corfu built <b>upward</b>: 6–7-storey tenements on lanes two people wide. It looks more Genoa or Naples than Greek island.",
+      "Forget island-white — the palette here is Venetian ochre, terracotta and faded rose with green shutters.",
+      "Tucked inside it is the <b>Antivouniotissa</b> church-museum, full of Byzantine icons — and part of the combined ticket, if you decide to go in.",
+      "The name itself is Venetian: each little hidden square that opens between the lanes is a <i>campiello</i>."
+    ] },
   { id:"spyridon", time:"14:15", name:"St Spyridon Church", ll:[39.6251,19.9227],
     note:"The island's patron saint, red bell tower, calm cool interior. Then wander the alleys around it.",
-    chips:[["muted","free","Free"],["muted","clock","~20 min"]] },
+    chips:[["muted","free","Free"],["muted","clock","~20 min"]],
+    facts:[
+      "Inside is a real <b>mummy</b>: the saint's ~1,700-year-old incorrupt body lies in a silver casket, opened for veneration — face and slippered feet visible.",
+      "Locals say he still walks the island at night working miracles, so his velvet <b>slippers are replaced every year</b> because they wear out. (A genuine tradition.)",
+      "He wasn't even Corfiot — a Cypriot shepherd-bishop who died in 348. His body was <b>smuggled out of Constantinople after 1453 hidden in a bale of straw</b> on a mule.",
+      "He's patron because he keeps saving the place — plague, famine, and above all the <b>1716 Ottoman siege</b>, when a freak summer storm wrecked the Turkish fleet. Four processions a year still carry his body through town.",
+      "Almost every Corfiot family has a <b>'Spyros'</b> — the island's most common name, in his honour. The red-domed campanile, tallest in the Ionian, copies the Greek church's bell tower in Venice."
+    ] },
   { id:"asianart", time:"14:45", name:"Museum of Asian Art", ll:[39.6257,19.9247],
     note:"Inside the Palace of St Michael &amp; St George. Air-conditioned, uncrowded, with a lovely garden terrace behind.",
-    chips:[["pay","ticket","€10"],["muted","info","A/C indoors"]] },
+    chips:[["pay","ticket","€6"],["muted","info","A/C indoors"]],
+    facts:[
+      "The palace is <b>British</b>, not Venetian: built 1819–24 from Maltese stone as the home of the British Lord High Commissioner and seat of the Ionian Senate.",
+      "It was the birthplace of the <b>Order of St Michael and St George</b> — the British honour whose initials trail after diplomats' names (Bond's boss 'M' is a GCMG).",
+      "Improbably, this colonial palace holds the only museum in Greece devoted entirely to <b>Asian art</b> — around 15,000 Chinese, Japanese, Indian and Tibetan pieces.",
+      "It exists thanks to one man: Corfiot diplomat <b>Gregorios Manos</b>, who gave his ~10,000-object collection to the state and died nearly broke. It opened in 1928.",
+      "Behind the state rooms is a quiet garden-terrace café with one of the best sea views in town — a local secret."
+    ] },
   { id:"liston", time:"15:30", name:"The Liston", ll:[39.6239,19.9237],
     note:"A frappé under the Parisian-style arcades facing the Spianada. Your last stop — savour it, then move.",
-    chips:[["muted","info","Coffee"],["warn","warn","Leave by 15:55"]] },
+    chips:[["muted","info","Coffee"],["warn","warn","Leave by 15:55"]],
+    facts:[
+      "The Liston is <b>French</b>: Napoleon's men built these arcades (1807–14), copying the Rue de Rivoli — via engineer Mathieu de Lesseps, father of Ferdinand, who later built the Suez Canal.",
+      "Its name is a class marker: from the <b>lista</b> of noble families in the Libro d'Oro (Golden Book) — once, only those 'on the list' were allowed to promenade here.",
+      "The Spianada it faces is the <b>largest square in Greece</b> — and a former kill-zone: Venice flattened everything between town and fortress to give the cannons a clear field of fire.",
+      "<b>Cricket</b> is played on it — the only living cricket tradition in Greece, left by the British, complete with a Corfu league.",
+      "Order a <b>ginger beer</b> (tsitsibíra) — another British leftover, still brewed on the island.",
+      "Three empires in one view from your table: Venetian fortress ahead, French arcade above you, British palace to the left, Orthodox bells behind."
+    ] },
   { id:"port-b", time:"16:20", name:"Back aboard", ll:[39.6325,19.9036],
     note:"Walk the flat waterfront back to the port (~20–25 min), or take <b>Line 16</b> from Spilia. Aboard with margin before 16:30.",
     chips:[["walk","walk","Walk ~20–25 min"],["warn","ship","All aboard 16:30"]] }
@@ -340,6 +453,7 @@ STOPS.forEach((s,i)=>{
       </div>
       <p class="note">${s.note}</p>
       <div class="chips">${chips}</div>
+      ${s.facts?`<details class="facts"><summary>Worth knowing</summary><ul>${s.facts.map(f=>`<li>${f}</li>`).join('')}</ul></details>`:''}
     </div>`;
   listEl.appendChild(stop);
   cards[s.id]=stop;
@@ -348,6 +462,9 @@ STOPS.forEach((s,i)=>{
   const card=stop.querySelector('.card');
   card.addEventListener('click',()=>focusStop(s.id));
   card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();focusStop(s.id);}});
+  const det=stop.querySelector('.facts');
+  if(det){ det.addEventListener('click',e=>e.stopPropagation());
+           det.addEventListener('keydown',e=>e.stopPropagation()); }
 });
 
 /* ---------- build map ---------- */
