@@ -150,6 +150,35 @@
   .buy.primary{border-color:var(--brass);background:var(--brass-tint)}
   .buy.primary strong{color:#5c4212}
 
+  /* boat timetable */
+  .boat{
+    background:var(--sea-tint);
+    border:1px solid var(--sea);border-left:4px solid var(--sea);
+    border-radius:13px;padding:15px 16px;margin:0 0 22px;
+  }
+  .boat h2{
+    font-family:var(--font-display);font-weight:560;font-size:17px;margin:0 0 11px;
+    display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;
+  }
+  .boat .pin{
+    font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+    color:#0d4c60;font-weight:500;
+  }
+  .btab{width:100%;border-collapse:collapse;font-size:13px}
+  .btab th{
+    text-align:left;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.18em;
+    text-transform:uppercase;color:#0d4c60;font-weight:600;
+    padding:0 8px 6px 0;border-bottom:1px solid rgba(13,76,96,.3);
+  }
+  .btab td{padding:7px 8px 7px 0;border-bottom:1px solid rgba(13,76,96,.14);vertical-align:top;color:var(--ink)}
+  .btab td:first-child{font-weight:600;white-space:nowrap}
+  .btab td:nth-child(2){font-family:var(--font-mono);font-size:12px;color:var(--sea);white-space:nowrap}
+  .btab tr.hot td{background:rgba(180,71,46,.1)}
+  .btab tr.hot td:nth-child(2){color:var(--tile)}
+  .btab tr:last-child td{border-bottom:none}
+  .bnote{margin:12px 0 0;font-size:12.5px;line-height:1.55;color:#204652}
+  .bnote b{color:var(--ink)}
+
   .stop{
     position:relative;display:grid;
     grid-template-columns:64px 1fr;gap:2px;
@@ -287,26 +316,42 @@
   </div>
   <div class="prog">
     <div class="bar"><i id="barFill"></i></div>
-    <div class="count" id="count">0 / 8 done</div>
+    <div class="count" id="count">0 / 11 done</div>
   </div>
-  <div class="passnote"><span class="tag">Pass</span>Combined museum ticket <b>€14</b> (reduced €7) · 5 sites · valid 3 days. But your two paid stops total just <b>€12</b>, so buy singles unless you add a third — details &amp; buy links below.</div>
+  <div class="passnote"><span class="tag">Pass</span>Paid stops now total ~<b>€10</b> (Old Fortress €6 + Byzantine €4), under the <b>€14 pass</b> — so <b>buy singles</b>. The pass only wins if you add the Archaeological Museum. Details below.</div>
 </header>
 
 <div class="layout">
   <section id="mapPane"><div id="map"></div></section>
   <section id="listPane">
-    <p class="lead">A relaxed self-guided day <b>on foot</b> through the Venetian Old Town. Tap a stop to find it on the map; tap its <b>number</b> to check it off as you go.</p>
+    <p class="lead">A self-guided day <b>on foot</b> through the Venetian Old Town, ending with the <b>boat to Vídos</b> for a swim. Tap a stop to find it on the map; tap its <b>number</b> to check it off as you go.</p>
 
     <section class="tickets">
       <h2>Museum tickets &amp; the €14 pass</h2>
-      <p>The state <b>combined pass</b> is €14 (reduced €7), valid 3 days, covering the Old Fortress, Museum of Asian Art, Antivouniotissa (Byzantine), Archaeological Museum and Mon Repos. Your two paid stops are €6 each — <b>€12</b> — so singles are cheaper unless you add a third site (easiest: the Antivouniotissa, by lunch). The New Fortress is a separate ~€3 ticket, not on the pass.</p>
+      <p>The state <b>combined pass</b> is €14 (reduced €7, valid 3 days). Your plan hits just two of its sites — <b>Old Fortress €6</b> + <b>Antivouniotissa ~€4</b> = ~€10 — so <b>buy singles at the door</b>. Add the <b>Archaeological Museum</b> and the sum tips to ~€16, at which point the pass wins. Separate and not on the pass: the <b>New Fortress</b> (~€3) and the <b>Vídos boat</b> (~€4 return, paid on board). St Spyridon, San Giacomo and the Liston are free.</p>
       <div class="buyrow">
         <a class="buy primary" href="https://etickets.tap.gr" target="_blank" rel="noopener noreferrer"><strong>Official e-tickets</strong><span>etickets.tap.gr</span></a>
         <a class="buy" href="https://hhticket.gr" target="_blank" rel="noopener noreferrer"><strong>Official (mirror)</strong><span>hhticket.gr</span></a>
         <a class="buy" href="https://www.getyourguide.com/old-venetian-fortress-l146616/" target="_blank" rel="noopener noreferrer"><strong>Old Fortress</strong><span>GetYourGuide</span></a>
-        <a class="buy" href="https://www.getyourguide.com/corfu-museum-of-asian-art-l146618/" target="_blank" rel="noopener noreferrer"><strong>Asian Art Museum</strong><span>GetYourGuide</span></a>
       </div>
-      <p class="tnote">Cheapest is the on-site ticket office (no booking fee) — the pass is sold at any participating site. The official portal is no-markup but Corfu's sites aren't always listed there; GetYourGuide sells single entries with a small fee. St Spyridon is free.</p>
+      <p class="tnote">Honestly: don't pre-book. There are no timed-entry queues at these, the on-site office is cheapest (no booking fee), and the combined pass is <b>only sold at the sites themselves</b>. Bring cash for the Vídos boat.</p>
+    </section>
+
+    <section class="boat">
+      <h2>The Vídos boat <span class="pin">Old Port · opposite the BP station</span></h2>
+      <table class="btab">
+        <thead><tr><th>Leg</th><th>Time</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr><td>Walk there</td><td>10:50</td><td>New Fortress → Old Port, ~5 min downhill</td></tr>
+          <tr><td>Board</td><td>11:00</td><td>Quay opposite the BP petrol station · ~€4 return · <b>cash, pay on board</b></td></tr>
+          <tr><td>Crossing</td><td>~10 min</td><td>Lands at the Vídos jetty</td></tr>
+          <tr><td>Walk across</td><td>~10 min</td><td>Up the steps, straight over to Neratziótissa (far side)</td></tr>
+          <tr><td>Swim</td><td>11:20–12:30</td><td>~70 min. Taverna near the jetty for an early bite</td></tr>
+          <tr class="hot"><td>Return boat</td><td><b>~12:45</b></td><td>Back at the Old Port ~12:55 — Old Town from there</td></tr>
+          <tr><td>Slack</td><td>~3 hrs</td><td>Even a badly missed boat leaves you time. Comfortable margin</td></tr>
+        </tbody>
+      </table>
+      <p class="bnote"><b>Frequency — sources disagree, so confirm on the day.</b> The island's own tourism site says roughly every 15 min, 08:15–20:30 in summer; Lonely Planet says hourly; local operators say every 30–60 min, early morning to sunset. Ask the crew for the return times as you board. <b>The good news:</b> swimming in the morning means even an hourly boat costs you nothing — a missed 12:45 just means the 13:45, and you'd still make the ship with time to spare.</p>
     </section>
 
     <div id="list"></div>
@@ -317,8 +362,8 @@
   <div class="fnote">
     <p><span class="k">Getting in</span>You can walk both ways (~20–25 min each, flat and scenic) and skip buses entirely. If it's hot, take <b>Line 16</b> (port ⇄ Spilia) or Line 15 (port ⇄ San Rocco) for €1.20 a ride, bought at the port kiosk.</p>
     <p><span class="k">Route</span>Ship → Old Town on foot or Line 16 · everything inside the Old Town is walkable · back the same way.</p>
-    <p><span class="k">Tickets</span>Old Fortress and the Museum of Asian Art are <b>€6 each</b> (€12 for both). The €14 combined pass only pays off if you add a third state museum — easiest is the <b>Antivouniotissa</b> Byzantine museum by your lunch. For just these two, buy them separately.</p>
-    <p><span class="k">Don't miss it</span>Leave the Liston by <b>15:55</b>. Return queues at the terminal build up when several ships are in.</p>
+    <p><span class="k">Tickets</span>Buy singles at the door (~€10 total) — the €14 pass only pays off if you add the Archaeological Museum. Cash for the Vídos boat (~€4 return).</p>
+    <p><span class="k">Don't miss it</span>Ask the crew for the return boat times as you board, and aim for the <b>~12:45</b> back. Swimming in the morning means a missed boat costs you an hour of Old Town, not your ship.</p>
     <div class="actions">
       <button class="ghost" id="resetBtn">Reset checklist</button>
       <button class="ghost" id="fitBtn">Recenter map</button>
@@ -334,18 +379,61 @@ const STOPS = [
   { id:"port-a", time:"10:00", name:"Corfu Cruise Port", ll:[39.6328,19.9030],
     note:"Off the ship. It's a flat, scenic 20-minute walk to the Old Town along the waterfront — or hop on <b>Line 16</b> to Spilia, right by the New Fortress.",
     chips:[["walk","walk","Walk ~20 min"],["bus","bus","or Line 16 → Spilia"]] },
-  { id:"newfort", time:"10:30", name:"New Fortress", ll:[39.6266,19.9203],
-    note:"Start where you arrive: the Venetians' fortress above Spilia. Quiet ramparts, vaulted tunnels, and wide views over town and harbour.",
-    chips:[["pay","ticket","~€3"],["muted","clock","~45 min"]],
+  { id:"newfort", time:"10:25", name:"New Fortress", ll:[39.6266,19.9203],
+    note:"Start where you arrive: the Venetians' fortress above Spilia — ramparts, vaulted tunnels and a small ceramics museum inside.",
+    chips:[["pay","ticket","~€3"],["muted","clock","~25 min"]],
     facts:[
       "Venice began it in the 1570s and cleared a whole slice of the medieval town to build it — including the original St Spyridon church, which is why the saint's relics ended up where they are now.",
       "Look for the winged <b>Lion of St Mark</b> carved over the gateways — Venice's stamp of ownership, the same lion that guards Venice itself.",
-      "A honeycomb of vaulted tunnels and galleries runs underneath. It's usually near-empty — the quiet, cheap alternative to the Old Fortress.",
+      "A honeycomb of vaulted tunnels and galleries runs underneath, and a small ceramics museum sits inside. It's usually near-empty — the quiet, cheap alternative to the Old Fortress.",
       "Corfu was Venice's 'door to the Adriatic': this fort system is a big reason the island stayed unconquered while the rest of Greece fell to the Ottomans."
     ] },
-  { id:"oldfort", time:"11:30", name:"Old Fortress", ll:[39.6235,19.9275],
+  { id:"oldport", time:"11:00", name:"Old Port — Vídos boat", ll:[39.6270,19.9163],
+    note:"The quay is <b>right below the New Fortress</b> — a 5-minute walk down. Board the little <b>Vídos ferry</b> opposite the BP petrol station. ~€4 return, pay on board, no booking. Crossing ~10 min.",
+    chips:[["pay","ticket","~€4 return · cash"],["warn","warn","Ask for return times"]],
+    facts:[
+      "It's a locals' boat, not a tourist excursion — no booking, you just turn up and pay. In summer it shuttles across from early morning to late evening.",
+      "The crossing itself is the best view in town: the whole Venetian waterfront and the Old Fortress seen from the water.",
+      "<b>Ask the crew for the exact return times the moment you board</b> — schedules shift, and knowing them lets you relax for the rest of the day."
+    ] },
+  { id:"vidos", time:"11:20", name:"Neratziótissa Beach, Vídos", ll:[39.6383,19.9247],
+    note:"From the jetty, up the steps and straight across the island (~10 min walk) to Neratziótissa. Swim ~70 min. Taverna by the jetty for an early bite. <b>Back on the ~12:45 boat.</b>",
+    chips:[["walk","walk","~10 min from jetty"],["muted","info","Taverna by jetty"],["muted","clock","Swim ~70 min"]],
+    facts:[
+      "Vídos is car-free and thickly wooded with cypress and pine — rabbits, pheasants and peacocks roam it. Locals escape here for the shade in July.",
+      "The beaches nearest the jetty are rocky; <b>Neratziótissa is on the far side</b>, which is why it's worth the 10-minute walk across.",
+      "Bring <b>water shoes</b> — soft pebbles, and sea urchins have been reported. Facilities are minimal beyond the taverna.",
+      "It's a war grave: thousands of Serbian soldiers died here in WWI when the island was a typhoid quarantine camp, and the <b>Serbian Mausoleum</b> stands on the island. Most visitors are Serbs on pilgrimage."
+    ] },
+  { id:"antivou", time:"13:05", name:"Byzantine Museum (Antivouniotissa)", ll:[39.6266,19.9246],
+    note:"Boat lands ~12:55. The museum is a few minutes up into the Campiello — a 15th-century church of Byzantine icons, and a cool dark room after the sun.",
+    chips:[["pay","ticket","~€4 · on pass"],["muted","clock","~20 min"]],
+    facts:[
+      "It's set inside a 15th-century church — one of the oldest and richest in town — donated to the state by its owners.",
+      "The collection traces the <b>Cretan and Ionian ('Heptanese') schools</b>: the moment Byzantine icon-painting met Venetian art, as Corfu took in Cretan painters fleeing the Ottoman conquest of Crete.",
+      "Around 90 icons, 15th–19th century, plus frescoes and carved fragments."
+    ] },
+  { id:"sangiacomo", time:"13:35", name:"San Giacomo Square", ll:[39.6244,19.9217],
+    note:"The Municipal (Town Hall) Square — the old Venetian nobles' loggia, now the City Hall, facing the Catholic cathedral of St James.",
+    chips:[["muted","free","Free to wander"],["muted","clock","~12 min"]],
+    facts:[
+      "The City Hall was built by the Venetians in 1663 as the <b>Loggia Nobilei</b> — a members' club for the nobility — in carved white stone dotted with masks and medallions.",
+      "In 1720 it became the <b>Teatro San Giacomo</b>, the first modern theatre in Greece, staging Italian opera for almost two centuries before becoming the Town Hall in 1903.",
+      "Across the square is the Catholic cathedral, <b>Agios Iakovos (St James)</b> — Corfu still has a sizeable Catholic community, a Venetian legacy rare in Greece."
+    ] },
+  { id:"spyridon", time:"13:55", name:"St Spyridon Church", ll:[39.6251,19.9227],
+    note:"The island's patron saint, red bell tower, calm cool interior, gilded ceiling and the silver sarcophagus. Then wander the alleys around it.",
+    chips:[["muted","free","Free"],["muted","clock","~18 min"]],
+    facts:[
+      "Inside is a real <b>mummy</b>: the saint's ~1,700-year-old incorrupt body lies in a silver casket, opened for veneration — face and slippered feet visible.",
+      "Locals say he still walks the island at night working miracles, so his velvet <b>slippers are replaced every year</b> because they wear out. (A genuine tradition.)",
+      "He wasn't even Corfiot — a Cypriot shepherd-bishop who died in 348. His body was <b>smuggled out of Constantinople after 1453 hidden in a bale of straw</b> on a mule.",
+      "He's patron because he keeps saving the place — plague, famine, and above all the <b>1716 Ottoman siege</b>, when a freak summer storm wrecked the Turkish fleet. Four processions a year still carry his body through town.",
+      "Almost every Corfiot family has a <b>'Spyros'</b> — the island's most common name, in his honour. The red-domed campanile, tallest in the Ionian, copies the Greek church's bell tower in Venice."
+    ] },
+  { id:"oldfort", time:"14:25", name:"Old Fortress", ll:[39.6235,19.9275],
     note:"The great Venetian citadel on the sea side of town. Cross the moat and climb to the lighthouse for the full panorama.",
-    chips:[["pay","ticket","€6"],["muted","clock","Open 8–20"]],
+    chips:[["pay","ticket","€6 · on pass"],["muted","clock","~60 min · open 8–20"]],
     facts:[
       "The island's name is these two rocks: the twin <b>peaks</b> (koryphés) gave the Byzantine name <i>Koryphō</i>, 'city of the peaks', which Italian mouths turned into Corfù.",
       "The Venetians cut the <b>Contrafossa</b>, a moat through solid rock joining sea to sea — turning the citadel into an artificial island reached by drawbridge. Locals still use its Italian name.",
@@ -354,38 +442,16 @@ const STOPS = [
       "In 1718 lightning hit the powder magazine and blew up the interior, killing commander Andrea Pisani — who had survived the Ottoman siege two years earlier, only to die by his own gunpowder.",
       "The 1716 victory was a European sensation: <b>Vivaldi</b> wrote an oratorio for it. And that Doric 'ancient temple' inside is a fake — the British built the Church of St George in the 1840s."
     ] },
-  { id:"lunch", time:"13:00", name:"Lunch in the Campiello", ll:[39.6246,19.9232],
-    note:"Wander into the shaded lanes of the old quarter for a taverna — the coolest way through the hottest part of the day.",
-    chips:[["muted","clock","~75 min"]],
+  { id:"archmus", time:"Optional", name:"Archaeological Museum", ll:[39.6176,19.9231],
+    note:"A detour south into Garitsa for the giant Gorgon pediment from the Temple of Artemis. Adds ~50 min — only if you trim the fortress or skip the Liston. Closed Tuesdays.",
+    chips:[["warn","warn","Optional — adds ~50 min"],["pay","ticket","€6 · on pass"]],
     facts:[
-      "The Campiello is the medieval core — a maze of <b>kantoúnia</b> (alleys) with laundry strung between tall, shuttered houses.",
-      "Walled tight against sieges, Corfu built <b>upward</b>: 6–7-storey tenements on lanes two people wide. It looks more Genoa or Naples than Greek island.",
-      "Forget island-white — the palette here is Venetian ochre, terracotta and faded rose with green shutters.",
-      "Tucked inside it is the <b>Antivouniotissa</b> church-museum, full of Byzantine icons — and part of the combined ticket, if you decide to go in.",
-      "The name itself is Venetian: each little hidden square that opens between the lanes is a <i>campiello</i>."
-    ] },
-  { id:"spyridon", time:"14:15", name:"St Spyridon Church", ll:[39.6251,19.9227],
-    note:"The island's patron saint, red bell tower, calm cool interior. Then wander the alleys around it.",
-    chips:[["muted","free","Free"],["muted","clock","~20 min"]],
-    facts:[
-      "Inside is a real <b>mummy</b>: the saint's ~1,700-year-old incorrupt body lies in a silver casket, opened for veneration — face and slippered feet visible.",
-      "Locals say he still walks the island at night working miracles, so his velvet <b>slippers are replaced every year</b> because they wear out. (A genuine tradition.)",
-      "He wasn't even Corfiot — a Cypriot shepherd-bishop who died in 348. His body was <b>smuggled out of Constantinople after 1453 hidden in a bale of straw</b> on a mule.",
-      "He's patron because he keeps saving the place — plague, famine, and above all the <b>1716 Ottoman siege</b>, when a freak summer storm wrecked the Turkish fleet. Four processions a year still carry his body through town.",
-      "Almost every Corfiot family has a <b>'Spyros'</b> — the island's most common name, in his honour. The red-domed campanile, tallest in the Ionian, copies the Greek church's bell tower in Venice."
-    ] },
-  { id:"asianart", time:"14:45", name:"Museum of Asian Art", ll:[39.6257,19.9247],
-    note:"Inside the Palace of St Michael &amp; St George. Air-conditioned, uncrowded, with a lovely garden terrace behind.",
-    chips:[["pay","ticket","€6"],["muted","info","A/C indoors"]],
-    facts:[
-      "The palace is <b>British</b>, not Venetian: built 1819–24 from Maltese stone as the home of the British Lord High Commissioner and seat of the Ionian Senate.",
-      "It was the birthplace of the <b>Order of St Michael and St George</b> — the British honour whose initials trail after diplomats' names (Bond's boss 'M' is a GCMG).",
-      "Improbably, this colonial palace holds the only museum in Greece devoted entirely to <b>Asian art</b> — around 15,000 Chinese, Japanese, Indian and Tibetan pieces.",
-      "It exists thanks to one man: Corfiot diplomat <b>Gregorios Manos</b>, who gave his ~10,000-object collection to the state and died nearly broke. It opened in 1928.",
-      "Behind the state rooms is a quiet garden-terrace café with one of the best sea views in town — a local secret."
+      "Its star is the giant <b>Gorgon (Medusa) pediment</b> from the Temple of Artemis (~580 BC) — 17 m wide, one of the oldest and largest surviving temple sculptures in Greece: a snake-belted Medusa flanked by panthers.",
+      "Also here: the archaic <b>Lion of Menekrates</b> (7th c. BC), found by the ancient cemetery.",
+      "The finds come from <b>Paleopolis</b>, the ancient city of Korkyra, whose ruins lie just south by Mon Repos."
     ] },
   { id:"liston", time:"15:30", name:"The Liston", ll:[39.6239,19.9237],
-    note:"A frappé under the Parisian-style arcades facing the Spianada. Your last stop — savour it, then move.",
+    note:"A last frappé under the Parisian-style arcades facing the Spianada. Leave by 15:55 for the walk back.",
     chips:[["muted","info","Coffee"],["warn","warn","Leave by 15:55"]],
     facts:[
       "The Liston is <b>French</b>: Napoleon's men built these arcades (1807–14), copying the Rue de Rivoli — via engineer Mathieu de Lesseps, father of Ferdinand, who later built the Suez Canal.",
@@ -396,7 +462,7 @@ const STOPS = [
       "Three empires in one view from your table: Venetian fortress ahead, French arcade above you, British palace to the left, Orthodox bells behind."
     ] },
   { id:"port-b", time:"16:20", name:"Back aboard", ll:[39.6325,19.9036],
-    note:"Walk the flat waterfront back to the port (~20–25 min), or take <b>Line 16</b> from Spilia. Aboard with margin before 16:30.",
+    note:"Walk the waterfront from the Liston to the cruise terminal (~20–25 min), or grab a taxi (5 min) if you're cutting it fine.",
     chips:[["walk","walk","Walk ~20–25 min"],["warn","ship","All aboard 16:30"]] }
 ];
 
@@ -414,7 +480,7 @@ const IC = {
 };
 
 /* ---------- persistence (works in-app, downloaded, or memory) ---------- */
-const KEY="corfu_day_visited_v2";
+const KEY="corfu_day_visited_v6";
 const mem={};
 const store={
   async get(){
