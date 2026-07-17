@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Split — One Day Ashore</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,560;9..144,660&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2733;        /* Dalmatian stone shadow — text */
+    --sea:#1C6F80;        /* Adriatic teal — structure */
+    --sea-tint:#DBEAED;
+    --paper:#EFE9DC;      /* Brač limestone canvas */
+    --paper-2:#FBF8F0;    /* card */
+    --tile:#6B2748;       /* imperial porphyry — visited/active */
+    --tile-tint:#EBD9E0;
+    --brass:#A8863C;      /* gilt hairline / tickets */
+    --brass-tint:#EDE1C6;
+    --muted:#5A6B75;
+    --line:rgba(27,39,51,.14);
+    --line-strong:rgba(27,39,51,.28);
+    --font-display:'Fraunces',Georgia,'Times New Roman',serif;
+    --font-body:'Instrument Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    --font-mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--font-body);
+    color:var(--ink);
+    background:var(--paper);
+    -webkit-font-smoothing:antialiased;
+    line-height:1.45;
+  }
+  a{color:var(--sea)}
+
+  /* ---------- Header ---------- */
+  header{
+    position:sticky;top:0;z-index:1000;
+    background:linear-gradient(180deg,#1B2733 0%,#223442 100%);
+    color:#F2ECDD;
+    padding:14px 18px 12px;
+    box-shadow:0 2px 0 var(--brass), 0 10px 24px rgba(16,24,32,.28);
+  }
+  .head-top{display:flex;align-items:center;gap:12px}
+  .rose{flex:0 0 auto;width:34px;height:34px}
+  .wm{display:flex;flex-direction:column;line-height:1}
+  .eyebrow{
+    font-family:var(--font-mono);font-size:10.5px;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--brass);
+  }
+  .wm h1{
+    font-family:var(--font-display);font-weight:560;
+    font-size:22px;letter-spacing:.2px;margin:3px 0 0;color:#F7F0E0;
+  }
+  .head-right{margin-left:auto;text-align:right}
+  .meta{
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.02em;
+    color:#BCD2D8;white-space:nowrap;
+  }
+  .meta b{color:#F2ECDD;font-weight:600}
+  .allaboard{color:#E4A8C1}
+  /* progress */
+  .prog{display:flex;align-items:center;gap:10px;margin-top:11px}
+  .bar{flex:1;height:6px;border-radius:6px;background:rgba(255,255,255,.16);overflow:hidden}
+  .bar > i{display:block;height:100%;width:0;border-radius:6px;
+    background:linear-gradient(90deg,var(--brass),#9C3A69);
+    transition:width .5s cubic-bezier(.2,.8,.2,1)}
+  .count{font-family:var(--font-mono);font-size:12px;color:#EADFC7;min-width:64px;text-align:right}
+  .passnote{
+    margin-top:11px;padding-top:10px;border-top:1px solid rgba(255,255,255,.14);
+    font-size:12px;line-height:1.5;color:#D6E4E8;
+  }
+  .passnote b{color:#F2ECDD;font-weight:600}
+  .passnote .tag{
+    font-family:var(--font-mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+    background:var(--brass);color:#20180a;padding:2px 7px;border-radius:4px;margin-right:8px;
+    display:inline-block;
+  }
+
+  /* ---------- Layout ---------- */
+  .layout{max-width:1180px;margin:0 auto}
+  @media(min-width:860px){
+    .layout{display:grid;grid-template-columns:1.05fr .95fr;align-items:start}
+  }
+
+  /* ---------- Map ---------- */
+  #mapPane{padding:0}
+  #map{
+    height:44vh;min-height:280px;width:100%;
+    background:var(--paper-2);
+    border-bottom:1px solid var(--line);
+  }
+  @media(min-width:860px){
+    #mapPane{position:sticky;top:118px}
+    #map{height:calc(100vh - 118px);min-height:520px;border:none;
+      border-left:1px solid var(--line)}
+    #mapPane{order:2}
+    #listPane{order:1}
+  }
+  .leaflet-container{font-family:var(--font-body)}
+  .mk{
+    width:30px;height:30px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-mono);font-weight:600;font-size:13px;
+    background:var(--paper-2);color:var(--ink);
+    border:2.5px solid var(--ink);
+    box-shadow:0 2px 6px rgba(16,24,32,.35);
+    transition:transform .15s ease;
+  }
+  .mk.done{background:var(--tile);color:#fff;border-color:#43152C}
+  .mk.next{border-color:var(--brass);box-shadow:0 0 0 4px rgba(168,134,60,.35)}
+  .leaflet-popup-content-wrapper{border-radius:10px}
+  .pop b{font-family:var(--font-display);font-size:15px;display:block;margin-bottom:2px}
+  .pop .pt{font-family:var(--font-mono);font-size:11px;color:var(--sea);letter-spacing:.04em}
+
+  /* ---------- Itinerary list ---------- */
+  #listPane{padding:16px 16px 4px}
+  @media(min-width:860px){#listPane{padding:22px 26px 10px}}
+  .lead{
+    font-family:var(--font-display);font-weight:400;font-size:15.5px;
+    color:var(--muted);margin:2px 0 18px;max-width:46ch;
+  }
+  .lead b{color:var(--ink);font-weight:560}
+
+  /* tickets panel */
+  .tickets{
+    background:linear-gradient(180deg,#FBF8F0,#F4EDDD);
+    border:1px solid var(--brass);border-left:4px solid var(--brass);
+    border-radius:13px;padding:15px 16px;margin:0 0 22px;
+  }
+  .tickets h2{font-family:var(--font-display);font-weight:560;font-size:17px;margin:0 0 8px;letter-spacing:.1px}
+  .tickets p{margin:0;font-size:13.5px;color:var(--ink);line-height:1.5}
+  .tickets p b{font-weight:600}
+  .tickets .tnote{margin-top:11px;font-size:12px;color:var(--muted)}
+  .buyrow{display:flex;flex-wrap:wrap;gap:8px;margin:13px 0 2px}
+  .buy{
+    display:flex;flex-direction:column;gap:1px;text-decoration:none;
+    border:1px solid var(--line-strong);border-radius:9px;padding:8px 12px;background:#fff;
+    transition:border-color .15s,transform .1s,box-shadow .15s;
+  }
+  .buy:hover{border-color:var(--tile);box-shadow:0 3px 10px rgba(27,39,51,.1);transform:translateY(-1px)}
+  .buy strong{font-size:12.5px;color:var(--ink);font-weight:600}
+  .buy span{font-family:var(--font-mono);font-size:10px;color:var(--sea);letter-spacing:.01em}
+  .buy.primary{border-color:var(--brass);background:var(--brass-tint)}
+  .buy.primary strong{color:#5c4212}
+
+  /* swim window panel */
+  .boat{
+    background:var(--sea-tint);
+    border:1px solid var(--sea);border-left:4px solid var(--sea);
+    border-radius:13px;padding:15px 16px;margin:0 0 22px;
+  }
+  .boat h2{
+    font-family:var(--font-display);font-weight:560;font-size:17px;margin:0 0 11px;
+    display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;
+  }
+  .boat .pin{
+    font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+    color:#0e4c59;font-weight:500;
+  }
+  .btab{width:100%;border-collapse:collapse;font-size:13px}
+  .btab th{
+    text-align:left;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.18em;
+    text-transform:uppercase;color:#0e4c59;font-weight:600;
+    padding:0 8px 6px 0;border-bottom:1px solid rgba(14,76,89,.3);
+  }
+  .btab td{padding:7px 8px 7px 0;border-bottom:1px solid rgba(14,76,89,.14);vertical-align:top;color:var(--ink)}
+  .btab td:first-child{font-weight:600;white-space:nowrap}
+  .btab td:nth-child(2){font-family:var(--font-mono);font-size:12px;color:var(--sea);white-space:nowrap}
+  .btab tr.hot td{background:rgba(107,39,72,.09)}
+  .btab tr.hot td:nth-child(2){color:var(--tile)}
+  .btab tr:last-child td{border-bottom:none}
+  .bnote{margin:12px 0 0;font-size:12.5px;line-height:1.55;color:#1d4552}
+  .bnote b{color:var(--ink)}
+
+  .stop{
+    position:relative;display:grid;
+    grid-template-columns:64px 1fr;gap:2px;
+    padding-bottom:4px;
+  }
+  .rail{position:relative;display:flex;justify-content:center}
+  .rail::before{
+    content:"";position:absolute;top:34px;bottom:-4px;left:50%;
+    width:2px;transform:translateX(-50%);
+    background:repeating-linear-gradient(var(--line-strong) 0 5px,transparent 5px 10px);
+  }
+  .stop:last-child .rail::before{display:none}
+  .stop.done .rail::before{background:var(--tile)}
+  .node{
+    position:relative;z-index:2;margin-top:2px;
+    width:34px;height:34px;border-radius:50%;
+    border:2.5px solid var(--ink);background:var(--paper-2);
+    color:var(--ink);font-family:var(--font-mono);font-weight:600;font-size:13px;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+    transition:transform .12s ease,background .18s ease,border-color .18s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .node:hover{transform:scale(1.08)}
+  .node:active{transform:scale(.94)}
+  .node .num{transition:opacity .15s}
+  .node .tick{position:absolute;opacity:0;font-size:16px;color:#fff;transform:scale(.4);
+    transition:opacity .18s,transform .2s cubic-bezier(.2,1.4,.4,1)}
+  .stop.done .node{background:var(--tile);border-color:#43152C}
+  .stop.done .node .num{opacity:0}
+  .stop.done .node .tick{opacity:1;transform:scale(1)}
+  .stop.next .node{border-color:var(--brass);box-shadow:0 0 0 4px rgba(168,134,60,.28)}
+
+  .card{
+    background:var(--paper-2);border:1px solid var(--line);
+    border-radius:13px;padding:12px 14px 13px;margin:0 0 16px;
+    cursor:pointer;transition:border-color .18s,box-shadow .18s,transform .12s,opacity .25s;
+  }
+  .card:hover{border-color:var(--sea);box-shadow:0 4px 14px rgba(27,39,51,.08)}
+  .stop.done .card{opacity:.62}
+  .stop.done .card .name{text-decoration:line-through;text-decoration-color:var(--tile);text-decoration-thickness:2px}
+  .card-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .time{font-family:var(--font-mono);font-weight:600;font-size:13px;color:var(--tile);letter-spacing:.02em}
+  .name{font-family:var(--font-display);font-weight:560;font-size:18px;margin:0;letter-spacing:.1px}
+  .flag{
+    margin-left:auto;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.22em;
+    text-transform:uppercase;color:#fff;background:var(--brass);
+    padding:3px 7px;border-radius:20px;align-self:center;
+  }
+  .stop:not(.next) .flag{display:none}
+  .note{margin:7px 0 0;font-size:14px;color:var(--muted)}
+  .note b{color:var(--ink);font-weight:600}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .chip{
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.01em;
+    padding:4px 9px;border-radius:20px;white-space:nowrap;font-weight:500;
+    display:inline-flex;align-items:center;gap:5px;
+  }
+  .chip svg{width:12px;height:12px}
+  .chip.bus{background:var(--sea-tint);color:#0e4c59}
+  .chip.pay{background:var(--brass-tint);color:#6f5017}
+  .chip.walk{background:transparent;color:var(--ink);border:1px solid var(--line-strong)}
+  .chip.warn{background:var(--tile-tint);color:#5B1F3C}
+  .chip.muted{background:rgba(27,39,51,.06);color:var(--muted)}
+
+  /* worth-knowing */
+  .facts{margin-top:11px;border-top:1px solid var(--line);padding-top:4px}
+  .facts summary{
+    cursor:pointer;list-style:none;padding:6px 0 2px;
+    font-family:var(--font-mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--brass);display:flex;align-items:center;gap:7px;-webkit-tap-highlight-color:transparent;
+  }
+  .facts summary::-webkit-details-marker{display:none}
+  .facts summary::before{content:"+";font-size:15px;line-height:1;color:var(--brass);transition:transform .2s}
+  .facts[open] summary::before{content:"–"}
+  .facts summary:hover{color:var(--tile)}
+  .facts ul{margin:8px 0 4px;padding:0 0 0 2px;list-style:none;display:flex;flex-direction:column;gap:9px}
+  .facts li{
+    position:relative;padding-left:16px;font-size:13.5px;line-height:1.5;color:var(--ink);
+  }
+  .facts li::before{
+    content:"";position:absolute;left:2px;top:8px;width:5px;height:5px;border-radius:50%;
+    background:var(--brass);
+  }
+  .facts li b{font-weight:600}
+  .facts li i{font-style:italic;color:var(--muted)}
+  .stop.done .facts li{color:var(--muted)}
+
+  /* ---------- Footer ---------- */
+  footer{
+    max-width:1180px;margin:0 auto;padding:6px 16px 40px;
+  }
+  @media(min-width:860px){footer{padding:6px 26px 44px}}
+  .fnote{
+    background:var(--paper-2);border:1px solid var(--line);
+    border-radius:13px;padding:15px 16px;
+  }
+  .fnote p{margin:0 0 10px;font-size:13px;line-height:1.55;color:var(--ink)}
+  .fnote p:last-of-type{margin-bottom:0}
+  .fnote .k{
+    display:inline-block;min-width:96px;
+    font-family:var(--font-mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--brass);font-weight:600;
+  }
+  .fnote b{font-weight:600}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 10px}
+  .ghost{
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    background:transparent;border:1px solid var(--line-strong);color:var(--ink);
+    border-radius:8px;padding:8px 12px;cursor:pointer;
+    transition:border-color .15s,background .15s;
+  }
+  .ghost:hover{border-color:var(--tile);background:var(--tile-tint)}
+  .credit{font-size:11px;color:var(--muted);margin:0}
+  /* ---------- language switch ---------- */
+  .langsw{
+    display:flex;flex:0 0 auto;
+    border:1px solid rgba(255,255,255,.3);border-radius:7px;overflow:hidden;
+  }
+  .langsw button{
+    font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;font-weight:600;
+    background:transparent;border:0;color:#AFC7CF;padding:4px 9px;cursor:pointer;
+    transition:background .15s,color .15s;-webkit-tap-highlight-color:transparent;
+  }
+  .langsw button+button{border-left:1px solid rgba(255,255,255,.3)}
+  .langsw button[aria-pressed="true"]{background:var(--brass);color:#20180a}
+  .langsw button:hover:not([aria-pressed="true"]){color:#F2ECDD}
+  body[data-lang="en"] [data-l="ru"]{display:none}
+  body[data-lang="ru"] [data-l="en"]{display:none}
+
+  :focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+  @media(prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
+</style>
+</head>
+<body data-lang="en">
+
+<header>
+  <div class="head-top">
+    <svg class="rose" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+      <circle cx="20" cy="20" r="18" stroke="#A8863C" stroke-width="1.2"/>
+      <path d="M20 3 L23 20 L20 37 L17 20 Z" fill="#F2ECDD"/>
+      <path d="M3 20 L20 17 L37 20 L20 23 Z" fill="#6B2748"/>
+      <circle cx="20" cy="20" r="2.2" fill="#A8863C"/>
+    </svg>
+    <div class="wm">
+      <span class="eyebrow">Port day · Croatia</span>
+      <h1>Split — One Day Ashore</h1>
+    </div>
+    <div class="head-right">
+      <div class="meta">Sat <b>18 July</b> · ~32°C</div>
+      <div class="meta">Ashore <b>09:00</b></div>
+      <div class="meta allaboard">All aboard <b>17:00</b></div>
+    </div>
+  </div>
+  <div class="prog">
+    <div class="bar"><i id="barFill"></i></div>
+    <div class="langsw" role="group" aria-label="Language for the Worth knowing notes">
+      <button type="button" data-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-lang="ru" aria-pressed="false">RU</button>
+    </div>
+    <div class="count" id="count">0 / 13 done</div>
+  </div>
+  <div class="passnote">
+    <span class="tag">Cover up</span>
+    Split fines walking through the old town in swimwear or shirtless — <b>€150</b> (some reports say up to €300), enforced by communal wardens on the Riva, Marmontova and inside the Palace. Swim last, and put a shirt back on before you leave the sand.
+    <br><br>
+    <span class="tag">Saturday</span>
+    Everything you need is open: cathedral <b>08:15–19:30</b>, market <b>06:00–14:00</b>, tourist info on the Riva <b>09:00–14:00</b>. You dodged the Sunday problem — on Sundays the cathedral shuts visitors out until 12:30 and this whole plan would have had to run backwards.
+  </div>
+</header>
+
+<div class="layout">
+  <section id="mapPane"><div id="map"></div></section>
+
+  <section id="listPane">
+    <p class="lead">Corfu was a fortress. Split is the opposite: <b>a Roman emperor's retirement villa that a town moved into and never left.</b> Diocletian built it around 300 AD; refugees from Salona took shelter inside the walls and their descendants are still there. <b>The order matters more than the list:</b> at 32°C you want the underground first, the tower before the heat, and the sea in the afternoon.</p>
+
+    <section class="tickets">
+      <h2>Tickets — buy at the Peristyle kiosk</h2>
+      <p>The Palace itself is <b>free and never closes</b>: the streets, the four gates, the Peristyle, the Vestibule, the free cellar corridor. You only pay for four interiors — <b>the cathedral complex</b> (cathedral, crypt, treasury, baptistery, bell tower) and <b>the Substructures</b>.</p>
+      <div class="buyrow">
+        <a class="buy primary" href="https://visitsplit.com/en/446/attractions" target="_blank" rel="noopener">
+          <strong>Cathedral — top tier</strong><span>~€11–15 · includes bell tower</span></a>
+        <a class="buy" href="https://visitsplit.com/en/529/the-substructures" target="_blank" rel="noopener">
+          <strong>Substructures</strong><span>~€8–10 · separate ticket</span></a>
+        <a class="buy" href="https://visitsplit.com/en/1316/split-in-1-day" target="_blank" rel="noopener">
+          <strong>Split in 1 day</strong><span>Tourist Board's own route</span></a>
+      </div>
+      <p class="tnote"><b>Prices disagree wildly across sources</b> — €7 basic, €10–11 with the tower, €12–15 for all five, depending on who you read and which year they wrote it. So don't quote a number at the kiosk: ask for <b>the tier that includes the bell tower</b> and pay whatever it is. That tier also sweeps up the Temple of Jupiter (stop 5), so it's one purchase, not two. Euros since 2023, cards fine, small cash for the market. Budget <b>~€20 all in</b> with the Substructures.</p>
+    </section>
+
+    <section class="boat">
+      <h2>The swim <span class="pin">Bačvice · 12 min walk from the Palace</span></h2>
+      <table class="btab">
+        <thead><tr><th>Leg</th><th>Time</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr><td>Walk there</td><td>13:35</td><td>Riva → east past the ferry piers → Bačvice, ~12–15 min, flat</td></tr>
+          <tr><td>In the water</td><td>13:50–15:40</td><td>~110 min. Sandy bottom, shallow a long way out — rare in Croatia</td></tr>
+          <tr><td>Sunbed</td><td>optional</td><td>~€10 a bed, ~€15 a parasol. The sand is free</td></tr>
+          <tr><td>Facilities</td><td>—</td><td>Showers, toilets, beach bars and snack stands right behind</td></tr>
+          <tr class="hot"><td>Cover up</td><td><b>15:40</b></td><td>Shirt on <b>before</b> you leave the beach — €150 fine in the centre</td></tr>
+          <tr><td>Walk back</td><td>15:55</td><td>Riva in ~15 min. Ship is another ~10 from there</td></tr>
+          <tr><td>Slack</td><td>~1 hr</td><td>No boat, no timetable, no way to miss anything. Cut the swim short at will</td></tr>
+        </tbody>
+      </table>
+      <p class="bnote"><b>Why this is easier than Corfu:</b> there is no ferry to catch. Bačvice is a walk, so the swim has no fixed ends — stretch it, trim it, or skip it if the Palace grabs you. <b>The one real trap</b> is the dress rule, not the clock. If you'd rather have somewhere quieter, keep walking east 5 more minutes to <b>Ovčice</b> — same water, a third of the people, none of the picigin.</p>
+    </section>
+
+    <div id="list"></div>
+  </section>
+</div>
+
+<footer>
+  <div class="fnote">
+    <p><span class="k">Getting in</span>Pure walking port. Mega-ships (MSC, NCL) usually take the outer berths at <b>Gat Sv. Duje</b> — 10–15 min along the seafront. Smaller ships get <b>Gat Sv. Petra</b>, about 5. Either way: no shuttle, no tender, flat the whole way.</p>
+    <p><span class="k">Route</span>Ship → Riva → into the Palace through the Bronze Gate → out the Golden Gate → Pjaca → market → lunch → Bačvice → back along the Riva. One loop, nothing doubles back.</p>
+    <p><span class="k">Tickets</span>Two purchases, both at the door, both at the Peristyle kiosk: the cathedral tier <b>with the bell tower</b>, and the Substructures. ~€20 all in.</p>
+    <p><span class="k">In the bag</span>A shirt or cover-up (the €150 rule), water, and shoes you can climb 200 open steps in. Towel and swimmers for stop 10. Nothing bulky — the tower stairs are single file.</p>
+    <p><span class="k">Don't miss it</span>The bell tower at 10:15, before the heat and the queue. And at noon the guard changes on the Peristyle with Diocletian himself — if you want that, flip stops 6 and 7 and do the Golden Gate after lunch.</p>
+    <div class="actions">
+      <button class="ghost" id="resetBtn">Reset checklist</button>
+      <button class="ghost" id="fitBtn">Recenter map</button>
+    </div>
+    <p class="credit">Times are a guide, not a timetable — adjust freely. Map © OpenStreetMap contributors.</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>
+/* ---------- itinerary data ---------- */
+const STOPS = [
+  { id:"port-a", time:"09:00", name:"Split Cruise Port", ll:[43.5024,16.4415],
+    note:"Off the ship and straight into it — no shuttle, no tender. Walk west along the waterfront to the <b>Riva</b>, then the Palace's south wall is right in front of you.",
+    chips:[["walk","walk","Walk 5–15 min"],["muted","info","Depends on your berth"]],
+    facts:{
+    en:[
+      "Split is one of the shortest port-to-old-town walks in the Adriatic. <b>Gat Sv. Petra</b> puts you 5 minutes from the Palace; the outer berth at <b>Gat Sv. Duje</b>, where the big MSC-class ships go, is 10–15.",
+      "Grab a free city map at the tourist kiosk as you clear the port gate — it marks the Bronze Gate, which is genuinely easy to walk past.",
+      "The Riva you're walking along <b>used to be the seabed</b>. The Adriatic came right up to the Palace's south wall and ships unloaded directly into the cellars."
+    ],
+    ru:[
+      "От причала до старого города — один из самых коротких переходов на всей Адриатике. От <b>Gat Sv. Petra</b> до дворца 5 минут; от внешнего причала <b>Gat Sv. Duje</b>, куда ставят большие суда класса MSC, — 10–15.",
+      "На выходе из порта возьмите бесплатную карту в туристическом киоске — на ней отмечены Бронзовые ворота, мимо которых легко пройти и не заметить.",
+      "Рива, по которой вы идёте, <b>раньше была морским дном</b>. Адриатика подходила вплотную к южной стене дворца, и корабли разгружались прямо в подвалы."
+    ]} },
+  { id:"cellars", time:"09:20", name:"Bronze Gate & the Substructures", ll:[43.5077,16.4401],
+    note:"Enter the way the supply boats did — through the <b>Bronze Gate</b>, the sea gate. The free souvenir corridor runs straight through; the ticketed halls open off it, and they're the point.",
+    chips:[["pay","ticket","~€8–10"],["muted","clock","~35 min"],["muted","info","Cool underground"]],
+    facts:{
+    en:[
+      "The emperor's apartments above were quarried away for building stone over the centuries. <b>The cellars are now the only evidence of what they looked like</b> — the vaults below are an exact negative of the rooms that vanished above.",
+      "They survived because they were <b>filled with rubbish</b>. For centuries the town above simply dropped its waste down here, sealing the halls and preserving them. Clearing them out started in the 19th century; the eastern halls only opened to the public in <b>May 1995</b>.",
+      "A Roman <b>oil and wine press</b> (<i>turnjačica</i>) is still standing in one of the halls, exactly where it was found.",
+      "Locals called them the <i>Grote</i> and were afraid of them — popular belief said these were the dungeons where Diocletian tortured Christians. He didn't, but the story stuck for 1,500 years.",
+      "This is <b>Meereen</b>: Daenerys chained her dragons in the central hall. It's the most-filmed room in Croatia."
+    ],
+    ru:[
+      "Императорские покои наверху веками разбирали на камень. <b>Подвалы — единственное, что осталось от их планировки</b>: своды внизу — точный слепок исчезнувших комнат наверху.",
+      "Они уцелели потому, что их <b>завалили мусором</b>. Веками город сбрасывал сюда отходы — и тем самым запечатал и сохранил залы. Разбирать начали в XIX веке; восточная часть открылась для публики только в <b>мае 1995 года</b>.",
+      "В одном из залов до сих пор стоит римский <b>пресс для масла и вина</b> (<i>turnjačica</i>) — ровно там, где его нашли.",
+      "Местные называли их <i>Grote</i> и боялись: считалось, что здесь Диоклетиан пытал христиан. Не пытал — но легенда прожила полторы тысячи лет.",
+      "Это <b>Миэрин</b>: здесь Дейенерис держала драконов на цепи. Самый снимаемый зал в Хорватии."
+    ]} },
+  { id:"peristyle", time:"10:00", name:"The Peristyle", ll:[43.5083,16.4402],
+    note:"Up the stairs out of the cellars and you surface in the emperor's ceremonial courtyard. Red granite columns, and a sphinx that was already ancient when Diocletian bought it.",
+    chips:[["muted","free","Free · always open"],["muted","clock","~10 min"],["warn","warn","Festival staging up"]],
+    facts:{
+    en:[
+      "<b>You've arrived four days into the Split Summer Festival</b> (14 Jul–14 Aug, 72nd edition). It opened right here on 14 July with Verdi's <i>Don Carlo</i>, staged against the cathedral facade. Expect a <b>stage rig and temporary seating</b> on the Peristyle by day — it doesn't block you, but it's in every photo. The festival also uses the cellars and Marjan; ask at the tourist info on the Riva whether anything's on before you sail.",
+      "The <b>sphinx</b> on the Peristyle is roughly <b>3,500 years old</b> — older than the palace by twelve centuries. Diocletian shipped about a dozen back from Egypt; this is the one that survived intact.",
+      "This courtyard is where subjects knelt to him. He staged himself as a living god here — <i>dominus et deus</i> — which is exactly why the Christians had to go.",
+      "Just south is the <b>Vestibule</b>, the domed rotunda that was the front door to his private apartments. The dome is gone but the acoustics are famous — <b>klapa</b> singers work it most days, and it's worth two minutes of standing still.",
+      "In summer, <b>every day at noon</b>, the guard changes here and 'Diocletian' addresses the crowd. Cheerfully daft, genuinely popular."
+    ],
+    ru:[
+      "<b>Вы попали на четвёртый день Сплитского лета</b> (14 июля — 14 августа, 72-й фестиваль). Он открылся именно здесь 14 июля вердиевским <i>Доном Карлосом</i> на фоне фасада собора. Днём ждите <b>сцену и временные трибуны</b> на Перистиле — пройти не мешают, но попадают в каждый кадр. Фестиваль занимает и подвалы, и Марьян; спросите в туринфо на Риве, не идёт ли что-нибудь до отхода судна.",
+      "<b>Сфинксу</b> на Перистиле около <b>3500 лет</b> — он старше дворца на двенадцать веков. Диоклетиан привёз из Египта около десятка; целым дошёл только этот.",
+      "В этом дворе перед ним падали ниц. Он выстроил себя как живого бога — <i>dominus et deus</i>, — и именно поэтому христиан пришлось убирать.",
+      "Чуть южнее — <b>Вестибюль</b>, круглый зал под куполом, парадный вход в личные покои. Купола нет, но акустика знаменита: почти каждый день здесь поют <b>клапа</b>, и две минуты постоять того стоят.",
+      "Летом <b>каждый день в полдень</b> здесь меняется стража, и «Диоклетиан» обращается к публике. Бодрая нелепость, которую все обожают."
+    ]} },
+  { id:"cathedral", time:"10:15", name:"Cathedral of St Domnius + bell tower", ll:[43.5081,16.4405],
+    note:"The single strangest building in the Adriatic, and the tower is the best view in Split. <b>Climb first, church after</b> — at 10:15 the stone is still cool and the queue hasn't formed. By noon it's 32°C in a stone chimney.",
+    chips:[["pay","ticket","~€11–15 · tower tier"],["muted","clock","~55 min"],["muted","info","Sat 08:15–19:30"]],
+    facts:{
+    en:[
+      "It's <b>Diocletian's own mausoleum</b>. He was buried in it. Then Christians came back, threw out his sarcophagus, and rededicated the building to <b>St Domnius (Dujam)</b> — the bishop of Salona whom Diocletian's own persecution had executed. The emperor's tomb became a church honouring his victim, and his body has never been found.",
+      "That makes it, by most counts, the <b>oldest cathedral building in the world still in use</b> in its original structure — consecrated around the 7th century, built in 305.",
+      "The <b>wooden doors</b> are 13th-century, carved by Andrija Buvina with 28 scenes from the life of Christ. They're behind glass now; look anyway.",
+      "The Gothic <b>bell tower</b> is a millennium younger than the church it's attached to — 57 m, around 200 steps. Narrow, steep, and you can see straight down through the open metal treads. Nothing to carry, no bag you'd rather not have on your back, and go up before the cathedral, not after.",
+      "From the top: the Palace roofline directly below, the Riva, your ship, Marjan to the west and Brač and Šolta across the water. <b>This is your view of the day</b> — it's the reason Marjan is only an optional stop at the bottom of this list.",
+      "Dress code is real: shoulders and knees covered. It's an active cathedral, and this is your first reason to have a shirt in the bag."
+    ],
+    ru:[
+      "Это <b>собственный мавзолей Диоклетиана</b>. Его здесь и похоронили. Потом вернулись христиане, вынесли саркофаг и переосвятили здание в честь <b>святого Домния (Дуе)</b> — салонского епископа, казнённого во время его же гонений. Гробница императора стала церковью его жертвы, а тело самого Диоклетиана так и не нашли.",
+      "По большинству оценок это <b>старейшее здание собора в мире, до сих пор действующее</b> в первоначальном виде: построено в 305-м, освящено около VII века.",
+      "<b>Деревянные двери</b> — XIII век, работа Андрии Бувины: 28 сцен из жизни Христа. Сейчас за стеклом, но посмотреть стоит.",
+      "Готическая <b>колокольня</b> моложе церкви на тысячу лет: 57 м, около 200 ступеней. Узко, круто, и сквозь открытые металлические ступени видно вниз. Ничего лишнего в руках, рюкзак лучше не брать — и поднимайтесь до собора, а не после.",
+      "Сверху: крыши дворца прямо под вами, Рива, ваше судно, Марьян на западе, Брач и Шолта за водой. <b>Это и есть ваш вид на день</b> — потому Марьян и стоит внизу списка как необязательный.",
+      "Дресс-код настоящий: плечи и колени закрыты. Собор действующий — и это первая причина держать футболку в сумке."
+    ]} },
+  { id:"jupiter", time:"11:15", name:"Temple of Jupiter", ll:[43.5083,16.4396],
+    note:"Two minutes west, down the narrowest lane in the city — <b>Pusti me da prođem</b>, 'Let me pass'. Small, quick, and included in your cathedral ticket.",
+    chips:[["pay","ticket","On the cathedral ticket"],["muted","clock","~15 min"]],
+    facts:{
+    en:[
+      "Same trick as the mausoleum, in reverse: Jupiter's temple became the <b>baptistery of St John</b> in the 6th or 7th century. Split kept its Roman buildings by converting them rather than demolishing them — which is the whole reason any of this is still standing.",
+      "There's a <b>headless Egyptian sphinx</b> guarding the door. The head was removed at some point and has never been found.",
+      "The coffered ceiling and the carved doorway are original Roman work — one of the best-preserved small temple interiors anywhere.",
+      "Inside is an 11th-century font panel showing <b>a Croatian king on his throne</b> — the earliest known image of a European monarch outside the Byzantine world."
+    ],
+    ru:[
+      "Тот же фокус, что с мавзолеем, только наоборот: храм Юпитера стал <b>баптистерием святого Иоанна</b> в VI–VII веке. Сплит сохранял римские постройки, переделывая их, а не снося, — только поэтому всё это ещё стоит.",
+      "Двери сторожит <b>безголовый египетский сфинкс</b>. Голову когда-то сняли, и она так и не нашлась.",
+      "Кессонный потолок и резной портал — подлинная римская работа, один из лучше всего сохранившихся интерьеров небольшого храма где бы то ни было.",
+      "Внутри — плита купели XI века с изображением <b>хорватского короля на троне</b>: самое раннее известное изображение европейского монарха за пределами византийского мира."
+    ]} },
+  { id:"golden", time:"11:35", name:"Golden Gate & Gregory of Nin", ll:[43.5094,16.4408],
+    note:"Out the north wall through the emperor's own gate. The giant bronze bishop is right outside. <b>Rub the toe.</b>",
+    chips:[["muted","free","Free"],["muted","clock","~15 min"]],
+    facts:{
+    en:[
+      "The <b>Golden Gate</b> was Diocletian's private entrance — the road from it ran to <b>Salona</b>, his birthplace and then the biggest city on the eastern Adriatic. Its ruins are 5 km inland at Solin.",
+      "<b>Gregory of Nin</b> (Grgur Ninski) is an 8.5 m bronze by <b>Ivan Meštrović</b>. He was the 10th-century bishop who fought Rome for the right to hold mass in Croatian, in the Glagolitic script, instead of Latin.",
+      "His <b>big toe is polished gold</b> from a century of hands. The tradition says a wish; the queue says everyone wants one.",
+      "The statue used to stand on the Peristyle. <b>Mussolini's occupation authorities had it removed</b> in 1941 — a Croatian nationalist in the middle of a Roman monument was not the message they wanted. It came back in 1954, to here."
+    ],
+    ru:[
+      "<b>Золотые ворота</b> — личный вход Диоклетиана: дорога от них вела в <b>Салону</b>, его родной город и тогда крупнейший на восточной Адриатике. Руины — в 5 км вглубь, в Солине.",
+      "<b>Григорий Нинский</b> (Grgur Ninski) — бронза 8,5 м работы <b>Ивана Мештровича</b>. Епископ X века, воевавший с Римом за право служить мессу по-хорватски, глаголицей, а не на латыни.",
+      "<b>Большой палец на его ноге отполирован до золота</b> веком чужих ладоней. Традиция обещает исполнение желания; очередь показывает, что желание есть у всех.",
+      "Статуя стояла на Перистиле. <b>Оккупационные власти Муссолини убрали её</b> в 1941-м: хорватский националист посреди римского памятника был не тем посланием, которое им требовалось. Вернулась в 1954-м — уже сюда."
+    ]} },
+  { id:"pjaca", time:"12:00", name:"Pjaca & the 24-hour clock", ll:[43.5089,16.4389],
+    note:"Back in through the <b>Iron Gate</b> onto the People's Square — the town's living room since the Middle Ages. Look up at the clock before you look at the cafés.",
+    chips:[["muted","free","Free"],["muted","clock","~15 min"]],
+    facts:{
+    en:[
+      "The clock on the Iron Gate tower counts <b>24 hours, not 12</b> — one of very few left anywhere. It takes a second to read and then you can't unsee it.",
+      "The <b>Iron Gate</b> is the only one of the four Roman gates that has never stopped being used. Not restored, not reopened — just continuously walked through for 1,700 years.",
+      "The square sits <b>outside</b> the Palace walls, which tells you the story in one glance: by the 14th century the town had outgrown the emperor's box and started building its own.",
+      "The Gothic <b>old town hall</b> in the middle is 15th-century. Locals call the square Pjaca (say <i>pyah-tsa</i>), never Narodni trg."
+    ],
+    ru:[
+      "Часы на башне Железных ворот считают <b>24 часа, а не 12</b> — таких почти нигде не осталось. Секунду соображаешь, а потом уже не развидеть.",
+      "<b>Железные ворота</b> — единственные из четырёх римских, которые никогда не закрывались. Не реставрировали, не открывали заново — просто ходят сквозь них 1700 лет подряд.",
+      "Площадь лежит <b>снаружи</b> дворцовых стен, и это вся история в одном взгляде: к XIV веку город перерос императорскую коробку и начал строить своё.",
+      "Готическая <b>старая ратуша</b> посередине — XV век. Местные говорят Pjaca (<i>пьяца</i>), а не Narodni trg."
+    ]} },
+  { id:"pazar", time:"12:20", name:"Pazar & the Silver Gate", ll:[43.5075,16.4417],
+    note:"East to the green market, hard against the Palace's east wall. Buy fruit for the beach. It shuts at <b>14:00</b>, so it's now or not at all.",
+    chips:[["muted","info","Cash helps"],["warn","clock","Closes 14:00"],["muted","clock","~20 min"]],
+    facts:{
+    en:[
+      "The <b>Pazar</b> is the real thing, not a tourist market — this is where Split buys its tomatoes. Figs, cherries, almonds, olive oil, lavender from the islands, depending on the month.",
+      "The <b>Silver Gate</b> beside it was <b>bricked up for centuries</b> and only reopened after WWII bombing cleared the buildings that had swallowed it. You walk through a Roman gate that was invisible within living memory.",
+      "Round the other side of the Palace is the <b>Peškarija</b>, the 1890s fish market — and famously <b>no flies</b>. The sulphur spring from the old spa next door keeps them off. Locals will tell you this within 30 seconds of meeting you."
+    ],
+    ru:[
+      "<b>Пазар</b> — настоящий рынок, не туристический: здесь Сплит покупает помидоры. Инжир, черешня, миндаль, оливковое масло, лаванда с островов — смотря по месяцу.",
+      "<b>Серебряные ворота</b> рядом были <b>заложены кирпичом веками</b> и открылись только после того, как бомбёжки Второй мировой снесли дома, поглотившие их. Вы проходите сквозь римские ворота, которых на памяти живущих просто не было видно.",
+      "С другой стороны дворца — <b>Пешкария</b>, рыбный рынок 1890-х, знаменитый тем, что <b>здесь нет мух</b>. Их отгоняет сернистый источник соседней старой купальни. Местный расскажет вам это в первые тридцать секунд знакомства."
+    ]} },
+  { id:"marenda", time:"12:45", name:"Marenda in Varoš", ll:[43.5086,16.4374],
+    note:"Lunch. Skip the Riva terraces and walk 5 minutes west into <b>Varoš</b>, the old fishermen's quarter — stone lanes, small konobas, half the price.",
+    chips:[["muted","info","~€15–25"],["muted","clock","~50 min"],["walk","walk","5 min west"]],
+    facts:{
+    en:[
+      "<b>Marenda</b> is the Dalmatian institution: the late-morning working meal, somewhere between brunch and lunch, eaten standing up or slowly, never in between.",
+      "Order what a local would: <b>crni rižot</b> (cuttlefish-ink risotto), <b>pašticada</b> if it's on, grilled fish by the kilo, or just <b>soparnik</b> — the flat chard pie from the hinterland.",
+      "Ask for <b>gemišt</b> (white wine and sparkling water) or <b>bevanda</b> (red and still). Ordering wine neat at midday marks you instantly.",
+      "Varoš is where the Palace people spilled out to when the walls filled up — a working quarter of tiny stone houses that somehow survived the tourism."
+    ],
+    ru:[
+      "<b>Marenda</b> — далматинский институт: поздний утренний рабочий приём пищи, что-то между завтраком и обедом, который едят либо стоя, либо очень медленно, но никогда посередине.",
+      "Берите то, что взял бы местный: <b>crni rižot</b> (ризотто с чернилами каракатицы), <b>pašticada</b>, если есть, рыбу на гриле на вес или просто <b>soparnik</b> — плоский пирог с мангольдом из глубинки.",
+      "Просите <b>gemišt</b> (белое с газированной водой) или <b>bevanda</b> (красное с обычной). Заказать в полдень вино чистым — сразу себя выдать.",
+      "Варош — куда вылился дворец, когда внутри стен кончилось место: рабочий квартал крошечных каменных домов, каким-то чудом переживший туризм."
+    ]} },
+  { id:"bacvice", time:"13:50", name:"Bačvice — swim & picigin", ll:[43.5024,16.4468],
+    note:"The city beach, 12 minutes east. <b>The only sandy beach in Split proper</b>, shallow far out, and the birthplace of the strangest sport in Europe. Swim ~110 min.",
+    chips:[["walk","walk","~12–15 min"],["muted","clock","Swim ~110 min"],["warn","warn","Shirt on before you leave"]],
+    facts:{
+    en:[
+      "<b>Picigin</b> was invented on this exact sand in <b>1908</b>, by Split students home from Prague who wanted to play water polo and found the bay too shallow for it. So they invented a game for the shallows instead.",
+      "The rules: five players in a loose star, ankle-deep, keeping a small ball airborne with <b>one open palm, one touch</b>. Nobody wins. There's no score. It ends when the ball hits the water and then it starts again.",
+      "The ball is a <b>tennis ball peeled like an orange</b> with a knife and sanded smooth. It is called a <i>balun</i> — call it a <i>lopta</i> on this beach and you will be corrected.",
+      "Two players are <b>sidruni</b> ('anchors'), who hold position; three are <b>trkači</b> ('runners'), who throw themselves at anything loose. The whole aesthetic is the diving save.",
+      "Croatia's Ministry of Culture <b>protects picigin as intangible cultural heritage</b>. There's a World Championship here every summer, and — the real tell — they play it on <b>1 January</b>, in 13°C water, every year without fail.",
+      "Locals call Bačvice <i>centar svita</i> — the centre of the world. They are not entirely joking."
+    ],
+    ru:[
+      "<b>Пицигин</b> придумали ровно на этом песке в <b>1908 году</b> сплитские студенты, вернувшиеся из Праги: они хотели играть в водное поло, а бухта оказалась слишком мелкой. Тогда они придумали игру под мелководье.",
+      "Правила: пятеро по щиколотку в воде, свободной звездой, держат мячик в воздухе <b>одной раскрытой ладонью, в одно касание</b>. Никто не выигрывает. Счёта нет. Кончается, когда мяч падает в воду, — и начинается снова.",
+      "Мяч — <b>теннисный, очищенный ножом как апельсин</b> и зашкуренный. Он называется <i>balun</i>; скажете на этом пляже <i>lopta</i> — вас поправят.",
+      "Двое — <b>sidruni</b> («якоря»), они держат позицию; трое — <b>trkači</b> («бегуны»), которые бросаются за всем, что летит мимо. Вся эстетика — в спасении в прыжке.",
+      "Министерство культуры Хорватии <b>охраняет пицигин как нематериальное наследие</b>. Летом здесь проводят чемпионат мира, а главное доказательство серьёзности — играют <b>1 января</b>, в воде +13, каждый год без исключений.",
+      "Бачвице местные зовут <i>centar svita</i> — центр мира. И шутят они не до конца."
+    ]} },
+  { id:"riva", time:"15:55", name:"Riva & Prokurative", ll:[43.5081,16.4377],
+    note:"Dry, dressed, and a coffee under the palms with the Palace wall behind you. <b>Prokurative</b> is 3 minutes further west if you want the better square.",
+    chips:[["muted","info","Coffee"],["muted","clock","~35 min"],["warn","warn","Leave by 16:30"]],
+    facts:{
+    en:[
+      "The Riva is <b>French</b>: it got its present shape two centuries ago under Napoleon's administration, which flattened the shoreline into a promenade. Same instinct as Corfu's Liston, same decade.",
+      "The south facade above the cafés <b>is the Palace</b> — those blind arches are Roman, and the windows punched into them are people's flats.",
+      "<b>Prokurative</b> (Republic Square) is a 19th-century neo-Renaissance U built deliberately in imitation of St Mark's in Venice — an Austrian mayor's homage to a republic that had already been dead 50 years.",
+      "Coffee here is a two-hour activity, not a drink. Nobody will rush you, which is the one thing to watch on a port day."
+    ],
+    ru:[
+      "Рива — <b>французская</b>: нынешний вид она получила двести лет назад при наполеоновской администрации, которая выровняла береговую линию в променад. Тот же импульс, что и корфуский Листон, то же десятилетие.",
+      "Южный фасад над кафе — <b>это и есть дворец</b>: глухие арки римские, а окна, пробитые в них, — чьи-то квартиры.",
+      "<b>Прокуративе</b> (площадь Республики) — неоренессансная «подкова» XIX века, нарочно построенная в подражание площади Сан-Марко: австрийский мэр воздал должное республике, которой к тому моменту уже полвека как не было.",
+      "Кофе здесь — занятие на два часа, а не напиток. Никто вас не поторопит, и это единственное, за чем стоит следить в портовый день."
+    ]} },
+  { id:"port-b", time:"16:40", name:"Back aboard", ll:[43.5024,16.4415],
+    note:"Flat walk back east along the water, ~10 min from the Riva. Allow extra for the gangway queue — everyone from every ship arrives at once.",
+    chips:[["walk","walk","Walk ~10 min"],["warn","ship","All aboard 17:00"]] },
+  { id:"marjan", time:"Optional", name:"Marjan — Vidilica viewpoint", ll:[43.5091,16.4308],
+    note:"The pine hill west of town, and the classic view down over the Palace roofline and the islands. Steps up from Varoš, ~20 min. <b>Adds ~60 min</b> — only if you trim the swim, and not at 14:00 in July.",
+    chips:[["warn","warn","Optional — adds ~60 min"],["muted","free","Free"],["walk","walk","~20 min of steps"]],
+    facts:{
+    en:[
+      "<b>Vidilica</b> is the first terrace, reached by stone steps up from Varoš — café at the top, and the whole city laid out below with Brač and Šolta beyond.",
+      "Marjan is a <b>planted forest</b>, not a natural one: Aleppo pines put in from the 1850s onward by a citizens' society, on what was a bare limestone ridge. Split grew its own hill.",
+      "The old <b>Jewish cemetery</b> is on the way up — founded 1573, one of the oldest in Europe, and still there.",
+      "The bell tower already gave you a version of this view from the middle of it. Marjan gives you the view <i>of</i> it. Do this one only if the day runs early."
+    ],
+    ru:[
+      "<b>Видилица</b> — первая терраса, каменные ступени вверх из Вароша; наверху кафе, а внизу весь город, за ним Брач и Шолта.",
+      "Марьян — <b>посаженный лес</b>, а не природный: алеппские сосны высаживало городское общество с 1850-х на голом известняковом хребте. Сплит вырастил себе холм.",
+      "По дороге наверх — старое <b>еврейское кладбище</b>, основано в 1573-м, одно из старейших в Европе, и оно на месте.",
+      "Колокольня уже дала вам этот вид изнутри. Марьян даёт вид <i>на</i> него. Беритесь только если день идёт с опережением."
+    ]} }
+];
+
+/* ---------- tiny icon set ---------- */
+const IC = {
+  ticket:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2H5a2 2 0 0 1-2-2 2 2 0 0 0 0-4z"/></svg>',
+  bus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="13" rx="2"/><path d="M4 11h16M7 17v2M17 17v2"/><circle cx="8" cy="14" r=".6"/><circle cx="16" cy="14" r=".6"/></svg>',
+  swap:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 4 3 8l4 4M3 8h13M17 20l4-4-4-4M21 16H8"/></svg>',
+  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>',
+  walk:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13" cy="4" r="1.6"/><path d="M11 21l2-6-3-2 1-5 4 3 2 1M8 21l3-5"/></svg>',
+  ship:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 15l2 5h14l2-5M5 15V9l7-3 7 3v6M12 3v3"/></svg>',
+  warn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4 2 20h20L12 4zM12 10v4M12 17h.01"/></svg>',
+  info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><path d="M12 11v5M12 8h.01"/></svg>',
+  free:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><path d="M9 12h6M12 9v6"/></svg>'
+};
+
+/* ---------- persistence (works in-app, downloaded, or memory) ---------- */
+const KEY="split_day_visited_v1";
+const LKEY="split_day_lang_v1";
+const mem={};
+const store={
+  async get(k){
+    try{ if(window.storage&&window.storage.get){ const r=await window.storage.get(k,false); return r?r.value:null; } }catch(e){}
+    try{ return localStorage.getItem(k); }catch(e){}
+    return mem[k]||null;
+  },
+  async set(k,v){
+    try{ if(window.storage&&window.storage.set){ await window.storage.set(k,v,false); return; } }catch(e){}
+    try{ localStorage.setItem(k,v); return; }catch(e){}
+    mem[k]=v;
+  }
+};
+
+let visited=new Set();
+const listEl=document.getElementById('list');
+const cards={}, markers={};
+let map, reduceMotion=matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+/* ---------- build list ---------- */
+STOPS.forEach((s,i)=>{
+  const stop=document.createElement('div');
+  stop.className='stop'; stop.dataset.id=s.id;
+  const chips=s.chips.map(c=>`<span class="chip ${c[0]}">${IC[c[1]]||''}${c[2]}</span>`).join('');
+  stop.innerHTML=`
+    <div class="rail">
+      <button class="node" data-id="${s.id}" aria-pressed="false" aria-label="Mark ${s.name} as visited">
+        <span class="num">${i+1}</span><span class="tick">✓</span>
+      </button>
+    </div>
+    <div class="card" data-id="${s.id}" role="button" tabindex="0" aria-label="Show ${s.name} on map">
+      <div class="card-head">
+        <span class="time">${s.time}</span>
+        <h3 class="name">${s.name}</h3>
+        <span class="flag">Next</span>
+      </div>
+      <p class="note">${s.note}</p>
+      <div class="chips">${chips}</div>
+      ${s.facts?`<details class="facts"><summary><span data-l="en">Worth knowing</span><span data-l="ru">Что стоит знать</span></summary><ul data-l="en">${s.facts.en.map(f=>`<li>${f}</li>`).join('')}</ul><ul data-l="ru">${s.facts.ru.map(f=>`<li>${f}</li>`).join('')}</ul></details>`:''}
+    </div>`;
+  listEl.appendChild(stop);
+  cards[s.id]=stop;
+
+  stop.querySelector('.node').addEventListener('click',e=>{e.stopPropagation();toggle(s.id);});
+  const card=stop.querySelector('.card');
+  card.addEventListener('click',()=>focusStop(s.id));
+  card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();focusStop(s.id);}});
+  const det=stop.querySelector('.facts');
+  if(det){ det.addEventListener('click',e=>e.stopPropagation());
+           det.addEventListener('keydown',e=>e.stopPropagation()); }
+});
+
+/* ---------- build map ---------- */
+function makeIcon(s,i){
+  const done=visited.has(s.id);
+  const isNext=!done && s.id===nextId();
+  return L.divIcon({className:'',iconSize:[30,30],iconAnchor:[15,15],popupAnchor:[0,-16],
+    html:`<div class="mk ${done?'done':''} ${isNext?'next':''}"><span>${i+1}</span></div>`});
+}
+function initMap(){
+  map=L.map('map',{scrollWheelZoom:true,zoomControl:true});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    maxZoom:19, attribution:'© OpenStreetMap'}).addTo(map);
+  L.polyline(STOPS.filter(s=>s.time!=="Optional").map(s=>s.ll),
+    {color:'#1C6F80',weight:3,opacity:.75,dashArray:'2 8',lineCap:'round'}).addTo(map);
+  STOPS.forEach((s,i)=>{
+    const m=L.marker(s.ll,{icon:makeIcon(s,i),keyboard:false}).addTo(map);
+    m.bindPopup(`<div class="pop"><span class="pt">${s.time}</span><b>${s.name}</b></div>`);
+    m.on('click',()=>{highlight(s.id);cards[s.id].scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'center'});});
+    markers[s.id]=m;
+  });
+  fitAll();
+}
+function fitAll(){ map.fitBounds(L.latLngBounds(STOPS.map(s=>s.ll)).pad(.12)); }
+
+/* ---------- interactions ---------- */
+function focusStop(id){
+  const s=STOPS.find(x=>x.id===id);
+  highlight(id);
+  const opts={animate:!reduceMotion};
+  map.setView(s.ll, Math.max(map.getZoom(),16), opts);
+  markers[id].openPopup();
+  if(window.innerWidth<860) document.getElementById('map').scrollIntoView({behavior:reduceMotion?'auto':'smooth'});
+}
+let hl=null;
+function highlight(id){
+  if(hl&&cards[hl]) cards[hl].querySelector('.card').style.borderColor='';
+  hl=id; cards[id].querySelector('.card').style.borderColor='var(--tile)';
+}
+function nextId(){ const n=STOPS.find(s=>!visited.has(s.id)); return n?n.id:null; }
+
+function toggle(id){
+  visited.has(id)?visited.delete(id):visited.add(id);
+  store.set(KEY,JSON.stringify([...visited]));
+  render();
+}
+function render(){
+  const nid=nextId();
+  STOPS.forEach((s,i)=>{
+    const done=visited.has(s.id);
+    const el=cards[s.id];
+    el.classList.toggle('done',done);
+    el.classList.toggle('next',!done && s.id===nid);
+    el.querySelector('.node').setAttribute('aria-pressed',done?'true':'false');
+    if(markers[s.id]) markers[s.id].setIcon(makeIcon(s,i));
+  });
+  const n=visited.size, total=STOPS.length;
+  document.getElementById('barFill').style.width=(n/total*100)+'%';
+  document.getElementById('count').textContent=`${n} / ${total} done`;
+}
+
+/* ---------- language ---------- */
+function setLang(l,persist){
+  l = (l==='ru') ? 'ru' : 'en';
+  document.body.dataset.lang=l;
+  document.querySelectorAll('.langsw button').forEach(b=>{
+    b.setAttribute('aria-pressed', b.dataset.lang===l ? 'true' : 'false');
+  });
+  if(persist) store.set(LKEY,l);
+}
+document.querySelectorAll('.langsw button').forEach(b=>{
+  b.addEventListener('click',()=>setLang(b.dataset.lang,true));
+});
+
+document.getElementById('resetBtn').addEventListener('click',()=>{
+  if(!visited.size||confirm('Clear all checked-off stops?')){visited.clear();store.set(KEY,'[]');render();}
+});
+document.getElementById('fitBtn').addEventListener('click',fitAll);
+addEventListener('resize',()=>{ if(map) setTimeout(()=>map.invalidateSize(),150); });
+
+/* ---------- boot ---------- */
+(async function(){
+  initMap();
+  const savedLang=await store.get(LKEY);
+  setLang(savedLang||'en',false);
+  const saved=await store.get(KEY);
+  if(saved){ try{ visited=new Set(JSON.parse(saved)); }catch(e){} }
+  render();
+  setTimeout(()=>map.invalidateSize(),300);
+})();
+</script>
+</body>
+</html>
