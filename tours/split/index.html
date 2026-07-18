@@ -75,6 +75,33 @@
     font-size:12px;line-height:1.5;color:#D6E4E8;
   }
   .passnote b{color:#F2ECDD;font-weight:600}
+  /* collapsible header */
+  .collapse-btn{
+    flex:0 0 auto;width:30px;height:30px;margin-left:6px;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);
+    border-radius:8px;color:#EADFC7;cursor:pointer;padding:0;
+    transition:background .15s,border-color .15s;-webkit-tap-highlight-color:transparent;
+  }
+  .collapse-btn:hover{background:rgba(255,255,255,.16)}
+  .collapse-btn svg{width:15px;height:15px;transition:transform .25s ease}
+  body[data-head="collapsed"] .collapse-btn svg{transform:rotate(180deg)}
+  .head-collapsible{
+    overflow:hidden;max-height:400px;opacity:1;
+    transition:max-height .3s ease,opacity .25s ease,margin .3s ease;
+  }
+  body[data-head="collapsed"] .head-collapsible{
+    max-height:0;opacity:0;margin-top:0 !important;pointer-events:none;
+  }
+  body[data-head="collapsed"] .head-right{display:none}
+  .head-mini{
+    display:none;margin-left:auto;
+    font-family:var(--font-mono);font-size:11px;color:#BCD2D8;white-space:nowrap;
+  }
+  .head-mini b{color:#F2ECDD;font-weight:600}
+  .head-mini .allaboard{color:#E4A8C1}
+  body[data-head="collapsed"] .head-mini{display:block}
+
   .passnote .tag{
     font-family:var(--font-mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
     background:var(--brass);color:#20180a;padding:2px 7px;border-radius:4px;margin-right:8px;
@@ -220,6 +247,18 @@
   .card-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
   .time{font-family:var(--font-mono);font-weight:600;font-size:13px;color:var(--tile);letter-spacing:.02em}
   .name{font-family:var(--font-display);font-weight:560;font-size:18px;margin:0;letter-spacing:.1px}
+  .name a.maplink{
+    color:inherit;text-decoration:none;display:inline-flex;align-items:baseline;gap:6px;
+    border-bottom:1.5px solid transparent;transition:border-color .15s,color .15s;
+  }
+  .name a.maplink:hover{color:var(--sea);border-bottom-color:var(--sea)}
+  .name a.maplink .pin{
+    font-size:12px;line-height:1;transform:translateY(-1px);flex:0 0 auto;opacity:.55;
+    transition:opacity .15s;
+  }
+  .name a.maplink:hover .pin{opacity:1}
+  .stop.done .name a.maplink{color:inherit}
+
   .flag{
     margin-left:auto;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.22em;
     text-transform:uppercase;color:#fff;background:var(--brass);
@@ -329,6 +368,10 @@
       <div class="meta">Ashore <b>09:00</b></div>
       <div class="meta allaboard">All aboard <b>17:00</b></div>
     </div>
+    <div class="head-mini">Sat <b>18 Jul</b> · ashore <b>09:00</b> · <span class="allaboard">aboard <b>17:00</b></span></div>
+    <button type="button" class="collapse-btn" id="headToggle" aria-expanded="true" aria-controls="headBody" aria-label="Collapse header">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>
+    </button>
   </div>
   <div class="prog">
     <div class="bar"><i id="barFill"></i></div>
@@ -336,14 +379,16 @@
       <button type="button" data-lang="en" aria-pressed="true">EN</button>
       <button type="button" data-lang="ru" aria-pressed="false">RU</button>
     </div>
-    <div class="count" id="count">0 / 13 done</div>
+    <div class="count" id="count">0 / 12 done</div>
   </div>
+  <div class="head-collapsible" id="headBody">
   <div class="passnote">
     <span class="tag">Cover up</span>
     Split fines walking through the old town in swimwear or shirtless — <b>€150</b> (some reports say up to €300), enforced by communal wardens on the Riva, Marmontova and inside the Palace. Swim last, and put a shirt back on before you leave the sand.
     <br><br>
     <span class="tag">Saturday</span>
     Everything you need is open: cathedral <b>08:15–19:30</b>, market <b>06:00–14:00</b>, tourist info on the Riva <b>09:00–14:00</b>. You dodged the Sunday problem — on Sundays the cathedral shuts visitors out until 12:30 and this whole plan would have had to run backwards.
+  </div>
   </div>
 </header>
 
@@ -372,13 +417,13 @@
       <table class="btab">
         <thead><tr><th>Leg</th><th>Time</th><th>Detail</th></tr></thead>
         <tbody>
-          <tr><td>Walk there</td><td>13:35</td><td>Riva → east past the ferry piers → Bačvice, ~12–15 min, flat</td></tr>
-          <tr><td>In the water</td><td>13:50–15:40</td><td>~110 min. Sandy bottom, shallow a long way out — rare in Croatia</td></tr>
+          <tr><td>Walk there</td><td>12:45</td><td>Riva → east past the ferry piers → Bačvice, ~12–15 min, flat</td></tr>
+          <tr class="hot"><td>In the water</td><td><b>13:00–15:40</b></td><td>~2h45 — the long stop of the day. Sandy bottom, shallow a long way out, rare in Croatia</td></tr>
           <tr><td>Sunbed</td><td>optional</td><td>~€10 a bed, ~€15 a parasol. The sand is free</td></tr>
-          <tr><td>Facilities</td><td>—</td><td>Showers, toilets, beach bars and snack stands right behind</td></tr>
+          <tr><td>Facilities</td><td>—</td><td>Showers, toilets and shade right behind the beach</td></tr>
           <tr class="hot"><td>Cover up</td><td><b>15:40</b></td><td>Shirt on <b>before</b> you leave the beach — €150 fine in the centre</td></tr>
           <tr><td>Walk back</td><td>15:55</td><td>Riva in ~15 min. Ship is another ~10 from there</td></tr>
-          <tr><td>Slack</td><td>~1 hr</td><td>No boat, no timetable, no way to miss anything. Cut the swim short at will</td></tr>
+          <tr><td>Slack</td><td>~1 hr</td><td>No boat, no timetable, no way to miss anything. Trim the swim whenever you like</td></tr>
         </tbody>
       </table>
       <p class="bnote"><b>Why this is easier than Corfu:</b> there is no ferry to catch. Bačvice is a walk, so the swim has no fixed ends — stretch it, trim it, or skip it if the Palace grabs you. <b>The one real trap</b> is the dress rule, not the clock. If you'd rather have somewhere quieter, keep walking east 5 more minutes to <b>Ovčice</b> — same water, a third of the people, none of the picigin.</p>
@@ -391,10 +436,10 @@
 <footer>
   <div class="fnote">
     <p><span class="k">Getting in</span>Pure walking port. Mega-ships (MSC, NCL) usually take the outer berths at <b>Gat Sv. Duje</b> — 10–15 min along the seafront. Smaller ships get <b>Gat Sv. Petra</b>, about 5. Either way: no shuttle, no tender, flat the whole way.</p>
-    <p><span class="k">Route</span>Ship → Riva → into the Palace through the Bronze Gate → out the Golden Gate → Pjaca → market → lunch → Bačvice → back along the Riva. One loop, nothing doubles back.</p>
+    <p><span class="k">Route</span>Ship → Riva → into the Palace through the Bronze Gate → out the Golden Gate → Pjaca → market → Bačvice for the swim → back along the Riva. One loop, nothing doubles back.</p>
     <p><span class="k">Tickets</span>Two purchases, both at the door, both at the Peristyle kiosk: the cathedral tier <b>with the bell tower</b>, and the Substructures. ~€20 all in.</p>
-    <p><span class="k">In the bag</span>A shirt or cover-up (the €150 rule), water, and shoes you can climb 200 open steps in. Towel and swimmers for stop 10. Nothing bulky — the tower stairs are single file.</p>
-    <p><span class="k">Don't miss it</span>The bell tower at 10:15, before the heat and the queue. And at noon the guard changes on the Peristyle with Diocletian himself — if you want that, flip stops 6 and 7 and do the Golden Gate after lunch.</p>
+    <p><span class="k">In the bag</span>A shirt or cover-up (the €150 rule), water, and shoes you can climb 200 open steps in. Towel and swimmers for the swim. Nothing bulky — the tower stairs are single file.</p>
+    <p><span class="k">Don't miss it</span>The bell tower at 10:15, before the heat and the queue. And at noon the guard changes on the Peristyle with Diocletian himself — if you want that, flip stops 6 and 7 and do the Golden Gate afterwards.</p>
     <div class="actions">
       <button class="ghost" id="resetBtn">Reset checklist</button>
       <button class="ghost" id="fitBtn">Recenter map</button>
@@ -510,7 +555,7 @@ const STOPS = [
       "Статуя стояла на Перистиле. <b>Оккупационные власти Муссолини убрали её</b> в 1941-м: хорватский националист посреди римского памятника был не тем посланием, которое им требовалось. Вернулась в 1954-м — уже сюда."
     ]} },
   { id:"pjaca", time:"12:00", name:"Pjaca & the 24-hour clock", ll:[43.5089,16.4389],
-    note:"Back in through the <b>Iron Gate</b> onto the People's Square — the town's living room since the Middle Ages. Look up at the clock before you look at the cafés.",
+    note:"Back in through the <b>Iron Gate</b> onto the People's Square — the town's living room since the Middle Ages. Look up at the clock before anything else.",
     chips:[["muted","free","Free"],["muted","clock","~15 min"]],
     facts:{
     en:[
@@ -539,25 +584,9 @@ const STOPS = [
       "<b>Серебряные ворота</b> рядом были <b>заложены кирпичом веками</b> и открылись только после того, как бомбёжки Второй мировой снесли дома, поглотившие их. Вы проходите сквозь римские ворота, которых на памяти живущих просто не было видно.",
       "С другой стороны дворца — <b>Пешкария</b>, рыбный рынок 1890-х, знаменитый тем, что <b>здесь нет мух</b>. Их отгоняет сернистый источник соседней старой купальни. Местный расскажет вам это в первые тридцать секунд знакомства."
     ]} },
-  { id:"marenda", time:"12:45", name:"Marenda in Varoš", ll:[43.5086,16.4374],
-    note:"Lunch. Skip the Riva terraces and walk 5 minutes west into <b>Varoš</b>, the old fishermen's quarter — stone lanes, small konobas, half the price.",
-    chips:[["muted","info","~€15–25"],["muted","clock","~50 min"],["walk","walk","5 min west"]],
-    facts:{
-    en:[
-      "<b>Marenda</b> is the Dalmatian institution: the late-morning working meal, somewhere between brunch and lunch, eaten standing up or slowly, never in between.",
-      "Order what a local would: <b>crni rižot</b> (cuttlefish-ink risotto), <b>pašticada</b> if it's on, grilled fish by the kilo, or just <b>soparnik</b> — the flat chard pie from the hinterland.",
-      "Ask for <b>gemišt</b> (white wine and sparkling water) or <b>bevanda</b> (red and still). Ordering wine neat at midday marks you instantly.",
-      "Varoš is where the Palace people spilled out to when the walls filled up — a working quarter of tiny stone houses that somehow survived the tourism."
-    ],
-    ru:[
-      "<b>Marenda</b> — далматинский институт: поздний утренний рабочий приём пищи, что-то между завтраком и обедом, который едят либо стоя, либо очень медленно, но никогда посередине.",
-      "Берите то, что взял бы местный: <b>crni rižot</b> (ризотто с чернилами каракатицы), <b>pašticada</b>, если есть, рыбу на гриле на вес или просто <b>soparnik</b> — плоский пирог с мангольдом из глубинки.",
-      "Просите <b>gemišt</b> (белое с газированной водой) или <b>bevanda</b> (красное с обычной). Заказать в полдень вино чистым — сразу себя выдать.",
-      "Варош — куда вылился дворец, когда внутри стен кончилось место: рабочий квартал крошечных каменных домов, каким-то чудом переживший туризм."
-    ]} },
-  { id:"bacvice", time:"13:50", name:"Bačvice — swim & picigin", ll:[43.5024,16.4468],
-    note:"The city beach, 12 minutes east. <b>The only sandy beach in Split proper</b>, shallow far out, and the birthplace of the strangest sport in Europe. Swim ~110 min.",
-    chips:[["walk","walk","~12–15 min"],["muted","clock","Swim ~110 min"],["warn","warn","Shirt on before you leave"]],
+  { id:"bacvice", time:"12:45", name:"Bačvice — swim & picigin", ll:[43.5024,16.4468],
+    note:"The city beach, 12 minutes east. <b>The only sandy beach in Split proper</b>, shallow far out, and the birthplace of the strangest sport in Europe. This is the long stop of the day — <b>swim ~2h45</b>, in and out of the water as you like.",
+    chips:[["walk","walk","~12–15 min"],["muted","clock","Swim 13:00–15:40"],["warn","warn","Shirt on before you leave"]],
     facts:{
     en:[
       "<b>Picigin</b> was invented on this exact sand in <b>1908</b>, by Split students home from Prague who wanted to play water polo and found the bay too shallow for it. So they invented a game for the shallows instead.",
@@ -576,20 +605,20 @@ const STOPS = [
       "Бачвице местные зовут <i>centar svita</i> — центр мира. И шутят они не до конца."
     ]} },
   { id:"riva", time:"15:55", name:"Riva & Prokurative", ll:[43.5081,16.4377],
-    note:"Dry, dressed, and a coffee under the palms with the Palace wall behind you. <b>Prokurative</b> is 3 minutes further west if you want the better square.",
-    chips:[["muted","info","Coffee"],["muted","clock","~35 min"],["warn","warn","Leave by 16:30"]],
+    note:"Dry, dressed, and a slow walk under the palms with the Palace wall behind you \u2014 the historic finale. <b>Prokurative</b> is 3 minutes further west if you want the better square.",
+    chips:[["muted","clock","~35 min"],["warn","warn","Leave by 16:30"]],
     facts:{
     en:[
       "The Riva is <b>French</b>: it got its present shape two centuries ago under Napoleon's administration, which flattened the shoreline into a promenade. Same instinct as Corfu's Liston, same decade.",
-      "The south facade above the cafés <b>is the Palace</b> — those blind arches are Roman, and the windows punched into them are people's flats.",
+      "The south facade above the promenade <b>is the Palace</b> — those blind arches are Roman, and the windows punched into them are people's flats.",
       "<b>Prokurative</b> (Republic Square) is a 19th-century neo-Renaissance U built deliberately in imitation of St Mark's in Venice — an Austrian mayor's homage to a republic that had already been dead 50 years.",
-      "Coffee here is a two-hour activity, not a drink. Nobody will rush you, which is the one thing to watch on a port day."
+      "This is the one stretch with slack in it — the swim ran long on purpose. Use it to drift west to Prokurative, or just sit on the sea wall and watch the ships. Only thing to watch is the clock: don't let the calm eat your gangway margin."
     ],
     ru:[
       "Рива — <b>французская</b>: нынешний вид она получила двести лет назад при наполеоновской администрации, которая выровняла береговую линию в променад. Тот же импульс, что и корфуский Листон, то же десятилетие.",
-      "Южный фасад над кафе — <b>это и есть дворец</b>: глухие арки римские, а окна, пробитые в них, — чьи-то квартиры.",
+      "Южный фасад над променадом — <b>это и есть дворец</b>: глухие арки римские, а окна, пробитые в них, — чьи-то квартиры.",
       "<b>Прокуративе</b> (площадь Республики) — неоренессансная «подкова» XIX века, нарочно построенная в подражание площади Сан-Марко: австрийский мэр воздал должное республике, которой к тому моменту уже полвека как не было.",
-      "Кофе здесь — занятие на два часа, а не напиток. Никто вас не поторопит, и это единственное, за чем стоит следить в портовый день."
+      "Это единственный отрезок с запасом времени — купание нарочно сделали длинным. Потратьте его на прогулку к Прокуративе или просто посидите на парапете и посмотрите на суда. Следить стоит лишь за часами: не дайте спокойствию съесть запас до трапа."
     ]} },
   { id:"port-b", time:"16:40", name:"Back aboard", ll:[43.5024,16.4415],
     note:"Flat walk back east along the water, ~10 min from the Riva. Allow extra for the gangway queue — everyone from every ship arrives at once.",
@@ -643,6 +672,14 @@ const store={
 };
 
 let visited=new Set();
+function mapsUrl(s){
+  const dest=s.ll[0]+","+s.ll[1];
+  // Directions from the user's CURRENT location: leaving origin unset makes
+  // Google Maps use live GPS ("Your location") as the start point.
+  return "https://www.google.com/maps/dir/?api=1"
+       + "&destination="+dest
+       + "&travelmode=walking";
+}
 const listEl=document.getElementById('list');
 const cards={}, markers={};
 let map, reduceMotion=matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -661,7 +698,7 @@ STOPS.forEach((s,i)=>{
     <div class="card" data-id="${s.id}" role="button" tabindex="0" aria-label="Show ${s.name} on map">
       <div class="card-head">
         <span class="time">${s.time}</span>
-        <h3 class="name">${s.name}</h3>
+        <h3 class="name"><a class="maplink" href="${mapsUrl(s)}" target="_blank" rel="noopener" title="Walking directions in Google Maps" aria-label="Open walking directions to ${s.name} in Google Maps" onclick="event.stopPropagation()">${s.name}<span class="pin" aria-hidden="true">↗</span></a></h3>
         <span class="flag">Next</span>
       </div>
       <p class="note">${s.note}</p>
@@ -752,6 +789,21 @@ document.querySelectorAll('.langsw button').forEach(b=>{
   b.addEventListener('click',()=>setLang(b.dataset.lang,true));
 });
 
+/* ---------- collapsible header ---------- */
+const HKEY="split_day_head_v1";
+const headToggle=document.getElementById('headToggle');
+function setHead(state,persist){
+  const collapsed = state==='collapsed';
+  document.body.dataset.head = collapsed ? 'collapsed' : 'open';
+  headToggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+  headToggle.setAttribute('aria-label', collapsed ? 'Expand header' : 'Collapse header');
+  if(map) setTimeout(()=>map.invalidateSize(),320);
+  if(persist) store.set(HKEY, collapsed ? 'collapsed' : 'open');
+}
+headToggle.addEventListener('click',()=>{
+  setHead(document.body.dataset.head==='collapsed' ? 'open' : 'collapsed', true);
+});
+
 document.getElementById('resetBtn').addEventListener('click',()=>{
   if(!visited.size||confirm('Clear all checked-off stops?')){visited.clear();store.set(KEY,'[]');render();}
 });
@@ -763,6 +815,8 @@ addEventListener('resize',()=>{ if(map) setTimeout(()=>map.invalidateSize(),150)
   initMap();
   const savedLang=await store.get(LKEY);
   setLang(savedLang||'en',false);
+  const savedHead=await store.get(HKEY);
+  setHead(savedHead||'open',false);
   const saved=await store.get(KEY);
   if(saved){ try{ visited=new Set(JSON.parse(saved)); }catch(e){} }
   render();
